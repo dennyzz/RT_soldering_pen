@@ -113,15 +113,6 @@
 			}
 		},
 		{
-			"file": "Drivers/io/gpio.cpp",
-			"settings":
-			{
-				"buffer_size": 2315,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "Src/config/FreeRTOSConfig.h",
 			"settings":
 			{
@@ -168,23 +159,9 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
-	"expanded_folders":
-	[
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Drivers",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Drivers/CMSIS",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Drivers/CMSIS/Device",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Drivers/CMSIS/Device/ST",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Drivers/CMSIS/Device/ST/STM32F0xx",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Drivers/CMSIS/Device/ST/STM32F0xx/Include",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Drivers/STM32F0xx_HAL_Driver",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Src",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Src/config",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Src/devices",
-		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Src/lib"
-	],
 	"file_history":
 	[
+		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Drivers/io/gpio.cpp",
 		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Src/config/stm32f0xx_hal_msp.c",
 		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Src/config/usart.h",
 		"/D/My Documents/Documents/Git/RT_soldering_pen/workspace/nucleo-proto/Src/config/usart.c",
@@ -311,12 +288,11 @@
 		"/D/My Documents/Documents/Git/lighteningsblog/_posts/2017-06-05-another-month.md",
 		"/D/My Documents/Documents/Git/PathfinderV2/cpp/curvepi.cpp",
 		"/D/My Documents/Documents/Git/PathfinderV2/cpp/curve.cpp",
-		"/D/My Documents/Documents/Git/PathfinderV2/python/curvepi.py",
-		"/D/My Documents/Documents/Git/PathfinderV2/cpp/hello.cpp"
+		"/D/My Documents/Documents/Git/PathfinderV2/python/curvepi.py"
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 28.0
 	},
 	"find_in_files":
 	{
@@ -414,7 +390,7 @@
 						"translation.y": 1761.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
@@ -851,36 +827,6 @@
 				},
 				{
 					"buffer": 12,
-					"file": "Drivers/io/gpio.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2315,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								41,
-								41
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
 					"file": "Src/config/FreeRTOSConfig.h",
 					"semi_transient": false,
 					"settings":
@@ -910,7 +856,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 13,
 					"file": "Drivers/CMSIS/RTOS/Template/cmsis_os.h",
 					"semi_transient": false,
 					"settings":
