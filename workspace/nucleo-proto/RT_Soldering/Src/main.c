@@ -76,17 +76,21 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 64 / 4);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-  osThreadDef(GUITask, startGUITask, osPriorityBelowNormal, 0, 5 * 1024 / 4);
+  osThreadDef(GUITask, startGUITask, osPriorityBelowNormal, 0, 3 * 128 / 4);
   GUITaskHandle = osThreadCreate(osThread(GUITask), NULL);
 
-  osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 3 * 1024 / 4);
+  osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 1 * 128 / 4);
   PIDTaskHandle = osThreadCreate(osThread(PIDTask), NULL);
 
-  osThreadDef(IMUTask, startIMUTask, osPriorityNormal, 0, 4 * 1024 / 4);
+  osThreadDef(IMUTask, startIMUTask, osPriorityNormal, 0, 1 * 128 / 4);
   IMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
+
+  //Test that there was enough ram in the FreeRToS pool to allocate all the tasks
+  if (IMUTaskHandle == 0)
+    asm("bkpt");
 
   /* Start scheduler */
   osKernelStart();
@@ -102,16 +106,7 @@ int main(void)
   * @param  argument: Not used 
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void const * argument)
-{
-  for(;;)
-  {
-    osDelay(1);
-  }
-}
-
-void startGUITask(void const *argument)
 {
   for(;;)
   {
@@ -121,6 +116,23 @@ void startGUITask(void const *argument)
     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
   }
 }
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used 
+  * @retval None
+  */
+void startGUITask(void const *argument)
+{
+  for(;;)
+  {
+    osDelay(1);
+  }
+}
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used 
+  * @retval None
+  */
 void startPIDTask(void const *argument)
 {
   for(;;)
@@ -128,6 +140,11 @@ void startPIDTask(void const *argument)
     osDelay(1);
   }
 }
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used 
+  * @retval None
+  */
 void startIMUTask(void const *argument)
 {
   for(;;)
@@ -147,15 +164,9 @@ void startIMUTask(void const *argument)
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  /* USER CODE BEGIN Callback 0 */
-
-  /* USER CODE END Callback 0 */
   if (htim->Instance == TIM1) {
     HAL_IncTick();
   }
-  /* USER CODE BEGIN Callback 1 */
-
-  /* USER CODE END Callback 1 */
 }
 
 #ifdef  USE_FULL_ASSERT

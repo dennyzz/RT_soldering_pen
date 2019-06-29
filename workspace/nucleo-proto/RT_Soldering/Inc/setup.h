@@ -18,8 +18,6 @@ extern DMA_HandleTypeDef hdma_i2c1_tx;
 
 extern IWDG_HandleTypeDef hiwdg;
 
-extern UART_HandleTypeDef huart2;
-
 void Setup_HAL();
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
