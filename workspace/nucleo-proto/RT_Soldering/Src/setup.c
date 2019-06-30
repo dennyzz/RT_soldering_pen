@@ -89,14 +89,6 @@ void SystemClock_Config(void)
   */
 static void MX_I2C1_Init(void)
 {
-
-  /* USER CODE BEGIN I2C1_Init 0 */
-
-  /* USER CODE END I2C1_Init 0 */
-
-  /* USER CODE BEGIN I2C1_Init 1 */
-
-  /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
   hi2c1.Init.Timing = 0x0000020B;
   hi2c1.Init.OwnAddress1 = 0;
@@ -135,7 +127,6 @@ static void MX_I2C1_Init(void)
   */
 static void MX_IWDG_Init(void)
 {
-
   /* USER CODE BEGIN IWDG_Init 0 */
 
   /* USER CODE END IWDG_Init 0 */
