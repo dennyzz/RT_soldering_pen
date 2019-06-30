@@ -19,9 +19,10 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include "main.hpp"
 #include "cmsis_os.h"
 #include "hardware.h"
+#include "oSI2CDrv.hpp"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -76,10 +77,10 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 64 / 4);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128 / 4);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-  osThreadDef(GUITask, startGUITask, osPriorityBelowNormal, 0, 3 * 128 / 4);
+  osThreadDef(GUITask, startGUITask, osPriorityBelowNormal, 0, 2 * 128 / 4);
   GUITaskHandle = osThreadCreate(osThread(GUITask), NULL);
 
   osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 1 * 128 / 4);
@@ -121,11 +122,18 @@ void StartDefaultTask(void const * argument)
   * @param  argument: Not used 
   * @retval None
   */
+#define DEVICEADDR_OLED   (0x3c<<1)
 void startGUITask(void const *argument)
 {
+  oSI2CDrv::init(&hi2c1);
+  oSI2CDrv::oSInit();
+  const uint8_t REFRESH_COMMANDS[17] = {0x80, 0xAF, 0x80, 0x21, 0x80, 0x20,
+                                      0x80, 0x7F, 0x80, 0xC0, 0x80, 0x22,
+                                      0x80, 0x00, 0x80, 0x01, 0x40};
   for(;;)
   {
-    osDelay(1);
+    osDelay(1000);
+    oSI2CDrv::Transmit(DEVICEADDR_OLED, (uint8_t*)REFRESH_COMMANDS, sizeof(REFRESH_COMMANDS));
   }
 }
 /**
@@ -169,6 +177,37 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   }
 }
 
+void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    oSI2CDrv::CpltCallback();
+}
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    oSI2CDrv::CpltCallback();
+}
+
+void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    oSI2CDrv::CpltCallback();
+}
+
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    oSI2CDrv::CpltCallback();
+}
+
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
+{
+    // asm("bkpt");
+    oSI2CDrv::CpltCallback();
+}
+
+void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    oSI2CDrv::CpltCallback();
+}
+
+
 #ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
@@ -185,5 +224,13 @@ void assert_failed(char *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
+
+
+
+
+
+
+
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
