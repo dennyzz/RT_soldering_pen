@@ -23,6 +23,7 @@
 #include "cmsis_os.h"
 #include "hardware.h"
 #include "oSI2CDrv.hpp"
+#include "display.hpp"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -77,20 +78,22 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128 / 4);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 64 / 4);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-  osThreadDef(GUITask, startGUITask, osPriorityBelowNormal, 0, 2 * 128 / 4);
+  osThreadDef(GUITask, startGUITask, osPriorityNormal, 0, 2048 / 4);
   GUITaskHandle = osThreadCreate(osThread(GUITask), NULL);
 
-  osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 1 * 128 / 4);
-  PIDTaskHandle = osThreadCreate(osThread(PIDTask), NULL);
+  // osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 256 / 4);
+  // PIDTaskHandle = osThreadCreate(osThread(PIDTask), NULL);
 
-  osThreadDef(IMUTask, startIMUTask, osPriorityNormal, 0, 1 * 128 / 4);
-  IMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
+  // osThreadDef(IMUTask, startIMUTask, osPriorityNormal, 0, 256 / 4);
+  // IMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
 
   //Test that there was enough ram in the FreeRToS pool to allocate all the tasks
-  if (IMUTaskHandle == 0)
+  // if (IMUTaskHandle == 0)
+  volatile uint32_t size = xPortGetFreeHeapSize();
+  if (GUITaskHandle == 0)
     asm("bkpt");
 
   /* Start scheduler */
@@ -122,18 +125,27 @@ void StartDefaultTask(void const * argument)
   * @param  argument: Not used 
   * @retval None
   */
-#define DEVICEADDR_OLED   (0x3c<<1)
+
 void startGUITask(void const *argument)
 {
-  oSI2CDrv::init(&hi2c1);
-  oSI2CDrv::oSInit();
-  const uint8_t REFRESH_COMMANDS[17] = {0x80, 0xAF, 0x80, 0x21, 0x80, 0x20,
-                                      0x80, 0x7F, 0x80, 0xC0, 0x80, 0x22,
-                                      0x80, 0x00, 0x80, 0x01, 0x40};
+  Display disp;
+  disp.init();
   for(;;)
   {
-    osDelay(1000);
-    oSI2CDrv::Transmit(DEVICEADDR_OLED, (uint8_t*)REFRESH_COMMANDS, sizeof(REFRESH_COMMANDS));
+    for(int i = 0; i < 128/2; i++){
+      for(int j = 0; j < 32/2; j++){
+        disp.draw_pixel(i*2, j*2);
+        disp.redraw();
+        osDelay(20);
+      }
+    }
+    for(int i = 0; i < 128/2; i++){
+      for(int j = 0; j < 32/2; j++){
+        disp.clear_pixel(i*2, j*2);
+        disp.redraw();
+        osDelay(20);
+      }
+    }
   }
 }
 /**
@@ -145,7 +157,7 @@ void startPIDTask(void const *argument)
 {
   for(;;)
   {
-    osDelay(1);
+    osDelay(100);
   }
 }
 /**
@@ -157,7 +169,7 @@ void startIMUTask(void const *argument)
 {
   for(;;)
   {
-    osDelay(1);
+    osDelay(100);
   }
 }
 
