@@ -14,12 +14,18 @@
 class oSI2CDrv {
 public:
 
-	static void init(I2C_HandleTypeDef *i2chandle) {i2c=i2chandle;
-		I2CSem=NULL;}
+	static void init(I2C_HandleTypeDef *i2chandle)
+	{
+		i2c=i2chandle;
+		I2CSem=NULL;
+	}
 
 	static void oSInit() {
-		I2CSem = xSemaphoreCreateBinary();
-		xSemaphoreGive(I2CSem);
+		if(I2CSem == NULL)
+		{
+			I2CSem = xSemaphoreCreateBinary();
+			xSemaphoreGive(I2CSem);
+		}
 	}
 
 	static void CpltCallback(); //Normal Tx Callback
