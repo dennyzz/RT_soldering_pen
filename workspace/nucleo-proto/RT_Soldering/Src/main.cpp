@@ -84,22 +84,22 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 64 / 4);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  // osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 64 / 4);
+  // defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   osThreadDef(GUITask, startGUITask, osPriorityNormal, 0, 2048 / 4);
   GUITaskHandle = osThreadCreate(osThread(GUITask), NULL);
 
-  // osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 256 / 4);
-  // PIDTaskHandle = osThreadCreate(osThread(PIDTask), NULL);
+  osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 256 / 4);
+  PIDTaskHandle = osThreadCreate(osThread(PIDTask), NULL);
 
-  // osThreadDef(IMUTask, startIMUTask, osPriorityNormal, 0, 256 / 4);
-  // IMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
+  osThreadDef(IMUTask, startIMUTask, osPriorityNormal, 0, 256 / 4);
+  IMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
 
   //Test that there was enough ram in the FreeRToS pool to allocate all the tasks
   // if (IMUTaskHandle == 0)
   volatile uint32_t size = xPortGetFreeHeapSize();
-  if (GUITaskHandle == 0)
+  if (PIDTaskHandle == 0)
     asm("bkpt");
 
   /* Start scheduler */
@@ -183,6 +183,9 @@ void startPIDTask(void const *argument)
   for(;;)
   {
     osDelay(100);
+    HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+    osDelay(100);
+    HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
   }
 }
 /**
