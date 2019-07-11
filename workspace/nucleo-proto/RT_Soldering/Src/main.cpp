@@ -24,6 +24,12 @@
 #include "hardware.h"
 #include "oSI2CDrv.hpp"
 #include "display.hpp"
+#include "font.hpp"
+
+
+#define DISP_WIDTH  (128)
+#define DISP_HEIGHT (32)
+typedef uint32_t HEIGHT_TYPE;
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -129,22 +135,41 @@ void StartDefaultTask(void const * argument)
 void startGUITask(void const *argument)
 {
   Display disp;
+  Display::FrameBuff &fb = disp.get_fb();
+  char buffer[10];
+  uint16_t x = 0;
+  uint16_t y = 0;
   disp.init();
   for(;;)
   {
-    for(int i = 0; i < 128/2; i++){
-      for(int j = 0; j < 32/2; j++){
-        disp.draw_pixel(i*2, j*2);
-        disp.redraw();
-        osDelay(20);
-      }
-    }
-    for(int i = 0; i < 128/2; i++){
-      for(int j = 0; j < 32/2; j++){
-        disp.clear_pixel(i*2, j*2);
-        disp.redraw();
-        osDelay(20);
-      }
+/*    for (int i = 0; i < 32; i++)
+    {
+      fb.draw_hline(20, i, 100);
+      disp.redraw();
+      osDelay(25);
+    }*/
+    // for(int i = 0; i < 128/2; i++){
+    //   for(int j = 0; j < 32/2; j++){
+    //     fb.draw_pixel(i*2, j*2);
+    //     disp.redraw();
+    //     osDelay(20);
+    //   }
+    // }
+    // for(int i = 0; i < 128/2; i++){
+    //   for(int j = 0; j < 32/2; j++){
+    //     fb.clear_pixel(i*2, j*2);
+    //     disp.redraw();
+    //     osDelay(20);
+    //   }
+    // }
+    for(int i = 0; i < 1000; i++)
+    {
+      sprintf(buffer, "%3d", i);
+      x = fb.draw_text(50, 10, buffer, Font::num22);
+      fb.draw_text(x, 10, "\260F", Font::num7);
+      disp.redraw();
+      osDelay(50);
+      fb.clear();
     }
   }
 }
