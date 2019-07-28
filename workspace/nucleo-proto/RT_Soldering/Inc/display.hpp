@@ -30,9 +30,9 @@ private:
 
 public:
 
-	void init(); // init i2c comms and screen
+	void init(); // init i2c comms and display
 
-	void redraw(); // draw the buffer out to screen
+	void redraw(); // draw the buffer out to display
 
     void rotate(bool x, bool y);
 

@@ -99,7 +99,7 @@ int main(void)
   //Test that there was enough ram in the FreeRToS pool to allocate all the tasks
   // if (IMUTaskHandle == 0)
   volatile uint32_t size = xPortGetFreeHeapSize();
-  if (PIDTaskHandle == 0)
+  if (IMUTaskHandle == 0)
     asm("bkpt");
 
   /* Start scheduler */
