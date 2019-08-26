@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
+Display display;
 
 const uint8_t Display::init_cmds[] = {
     Ssd1306::CONT_CMD,
@@ -41,6 +42,7 @@ void Display::init()
 
 void Display::redraw()
 {
+    // oSI2CDrv::Transmit(0xAA, (uint8_t*)fb_cmds.dummy, 2);
     oSI2CDrv::Transmit(DISP_ADDR, fb_cmds.display_buffer_cmds, fb_cmds.size);
 }
 
@@ -53,3 +55,4 @@ void Display::rotate(bool x, bool y) {
     };
     oSI2CDrv::Transmit(DISP_ADDR, rotate_cmds, sizeof(rotate_cmds));
 }
+

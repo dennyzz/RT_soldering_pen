@@ -24,6 +24,8 @@
 #include "hardware.h"
 #include "oSI2CDrv.hpp"
 #include "display.hpp"
+#include "screen.hpp"
+#include "screens/debug_screen.hpp"
 #include "font.hpp"
 
 
@@ -90,8 +92,8 @@ int main(void)
   osThreadDef(GUITask, startGUITask, osPriorityNormal, 0, 2048 / 4);
   GUITaskHandle = osThreadCreate(osThread(GUITask), NULL);
 
-  osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 256 / 4);
-  PIDTaskHandle = osThreadCreate(osThread(PIDTask), NULL);
+  // osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 256 / 4);
+  // PIDTaskHandle = osThreadCreate(osThread(PIDTask), NULL);
 
   osThreadDef(IMUTask, startIMUTask, osPriorityNormal, 0, 256 / 4);
   IMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
@@ -134,43 +136,16 @@ void StartDefaultTask(void const * argument)
 
 void startGUITask(void const *argument)
 {
-  Display disp;
-  Display::FrameBuff &fb = disp.get_fb();
-  char buffer[10];
-  uint16_t x = 0;
-  uint16_t y = 0;
-  disp.init();
+  display.init();
+  screen::Screen* list[screen::ScreenId::MAX];
+  screen::GUIManager guiMan(list);
+  screen::Debug debug(guiMan);
+  list[screen::ScreenId::DEBUG] = &debug;
   for(;;)
   {
-/*    for (int i = 0; i < 32; i++)
-    {
-      fb.draw_hline(20, i, 100);
-      disp.redraw();
-      osDelay(25);
-    }*/
-    // for(int i = 0; i < 128/2; i++){
-    //   for(int j = 0; j < 32/2; j++){
-    //     fb.draw_pixel(i*2, j*2);
-    //     disp.redraw();
-    //     osDelay(20);
-    //   }
-    // }
-    // for(int i = 0; i < 128/2; i++){
-    //   for(int j = 0; j < 32/2; j++){
-    //     fb.clear_pixel(i*2, j*2);
-    //     disp.redraw();
-    //     osDelay(20);
-    //   }
-    // }
-    for(int i = 0; i < 1000; i++)
-    {
-      sprintf(buffer, "%3d", i);
-      x = fb.draw_text(50, 10, buffer, Font::num22);
-      fb.draw_text(x, 10, "\260F", Font::num7);
-      disp.redraw();
-      osDelay(50);
-      fb.clear();
-    }
+    osDelay(50);
+    guiMan.get()->tick();
+    guiMan.get()->draw();
   }
 }
 /**

@@ -41,4 +41,6 @@ public:
 	}
 };
 
+extern Display display;
+
 #endif // __DISPLAY_HPP_

@@ -1,19 +1,21 @@
 #ifndef ___SCREEN_HPP_
 #define ___SCREEN_HPP_
 
-namespace screen {
+#include "display.hpp"
 
+namespace screen {
 class Screen;
 
-enum class ScreenId {
-	MAIN,
+enum ScreenId {
+	MAIN = 0,
 	INFO, 
 	COUNT, 
 	DEBUG,
+    MAX
 };
 
 class GUIManager {
-	ScreenId screen_id = ScreenId::MAIN;
+	ScreenId screen_id = ScreenId::DEBUG;
 	Screen **screen_list;
 
 public:
@@ -28,14 +30,13 @@ public:
         return screen_list[static_cast<int>(screen_id)];
     }
 
-}
+};
 
 /* base class for all Screen displays */
 class Screen {
-
-	board::Display::Fb &fb = board::display.get_fb();
-    GUIManager &screen_manager;
 protected:
+	Display::FrameBuff &fb = display.get_fb();
+    GUIManager &screen_manager;
 	void change_screen(ScreenId id) {
 		screen_manager.set(id);
 	}
@@ -46,8 +47,8 @@ public:
     virtual bool button_up(int act) { return false; };
     virtual bool button_dn(int act) { return false; };
     virtual bool button_both(int act) { return false; };
+    virtual void tick() = 0;
     virtual void draw() = 0;
-
 };
 
 }

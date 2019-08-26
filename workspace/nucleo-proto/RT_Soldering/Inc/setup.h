@@ -15,6 +15,7 @@ extern "C" {
 extern I2C_HandleTypeDef hi2c1;
 extern DMA_HandleTypeDef hdma_i2c1_rx;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
+extern ADC_HandleTypeDef hadc;
 
 extern IWDG_HandleTypeDef hiwdg;
 
