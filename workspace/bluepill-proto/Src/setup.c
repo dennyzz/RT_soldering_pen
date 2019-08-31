@@ -14,6 +14,17 @@ IWDG_HandleTypeDef hiwdg;
 PCD_HandleTypeDef hpcd_USB_FS;
 WWDG_HandleTypeDef hwwdg;
 
+static void MX_ADC1_Init(void);
+static void MX_ADC2_Init(void);
+static void MX_DMA_Init(void);
+static void MX_GPIO_Init(void);
+static void MX_I2C1_Init(void);
+static void MX_IWDG_Init(void);
+static void MX_USB_PCD_Init(void);
+static void MX_WWDG_Init(void);
+
+static void SystemClock_Config(void);
+
 void Setup_HAL() {
   /* Configure the system clock */
   SystemClock_Config();
@@ -307,6 +318,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
     GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    // GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     __HAL_AFIO_REMAP_I2C1_ENABLE();

@@ -5,12 +5,20 @@
 #ifndef HARDWARE_H_
 #define HARDWARE_H_
 
+#include "setup.h"
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+extern ADC_HandleTypeDef hadc1;
+extern ADC_HandleTypeDef hadc2;
+extern I2C_HandleTypeDef hi2c1;
+extern IWDG_HandleTypeDef hiwdg;
+extern PCD_HandleTypeDef hpcd_USB_FS;
+extern WWDG_HandleTypeDef hwwdg;
 
 void Error_Handler(void);
 
@@ -27,10 +35,10 @@ void Error_Handler(void);
 // #define VCP_RX_GPIO_Port GPIOA
 // #define LD3_Pin GPIO_PIN_3
 // #define LD3_GPIO_Port GPIOB
-// #define SDA_Pin GPIO_PIN_7
-// #define SDA_GPIO_Port GPIOB
-// #define SCL_Pin GPIO_PIN_6
-// #define SCL_GPIO_Port GPIOB
+#define SDA_Pin GPIO_PIN_9
+#define SDA_GPIO_Port GPIOB
+#define SCL_Pin GPIO_PIN_8
+#define SCL_GPIO_Port GPIOB
 #define LED3_Pin GPIO_PIN_13
 #define LED3_GPIO_Port GPIOC
 	
