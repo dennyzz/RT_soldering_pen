@@ -87,7 +87,7 @@ void SystemClock_Config(void)
 }
 
 /* ADC1 init function */
-void MX_ADC1_Init(void)
+static void MX_ADC1_Init(void)
 {
   ADC_ChannelConfTypeDef sConfig = {0};
 
@@ -116,7 +116,7 @@ void MX_ADC1_Init(void)
 
 }
 /* ADC2 init function */
-void MX_ADC2_Init(void)
+static void MX_ADC2_Init(void)
 {
   ADC_ChannelConfTypeDef sConfig = {0};
 
@@ -222,7 +222,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
   }
 } 
 
-void MX_DMA_Init(void) 
+static void MX_DMA_Init(void) 
 {
   /* DMA controller clock enable */
   __HAL_RCC_DMA1_CLK_ENABLE();
@@ -244,7 +244,7 @@ void MX_DMA_Init(void)
         * EVENT_OUT
         * EXTI
 */
-void MX_GPIO_Init(void)
+static void MX_GPIO_Init(void)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -281,7 +281,7 @@ void MX_GPIO_Init(void)
 }
 
 /* I2C1 init function */
-void MX_I2C1_Init(void)
+static void MX_I2C1_Init(void)
 {
 
   hi2c1.Instance = I2C1;
@@ -392,7 +392,7 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 } 
 
 /* IWDG init function */
-void MX_IWDG_Init(void)
+static void MX_IWDG_Init(void)
 {
 
   hiwdg.Instance = IWDG;
@@ -407,7 +407,7 @@ void MX_IWDG_Init(void)
 
 /* USB init function */
 
-void MX_USB_PCD_Init(void)
+static void MX_USB_PCD_Init(void)
 {
 
   hpcd_USB_FS.Instance = USB;
@@ -456,7 +456,7 @@ void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
 } 
 
 /* WWDG init function */
-void MX_WWDG_Init(void)
+static void MX_WWDG_Init(void)
 {
 
   hwwdg.Instance = WWDG;

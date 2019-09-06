@@ -19,14 +19,13 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.hpp"
+// #include "main.hpp"
 #include "cmsis_os.h"
 #include "setup.h"
 #include "hardware.h"
 #include "oSI2CDrv.hpp"
 #include "display.hpp"
-#include "screen.hpp"
-#include "screens/debug_screen.hpp"
+#include "screen/screen.hpp"
 #include "font.hpp"
 
 /* Private includes ----------------------------------------------------------*/
@@ -131,19 +130,21 @@ void StartDefaultTask(void const * argument)
 void startGUITask(void const *argument)
 {
   printf("GUI Task Initializing\n");
+  // screen::GUI gui()
   display.init();
   Display::FrameBuff &fb = display.get_fb();
   char buffer[10];
   uint16_t x = 0;
   uint16_t y = 0;
-  // screen::Screen* list[screen::ScreenId::MAX];
-  // screen::GUIManager guiMan(list);
-  // screen::Debug debug(guiMan);
-  // list[screen::ScreenId::DEBUG] = &debug;
   printf("GUI Task Started\n");
+  // uint32_t last_tick = osKernelSysTick();
+  // uint32_t task_delay;
   for(;;)
   {
-    // osDelay(50);
+    // osDelayUntil (&last_tick, 25);
+    // task_delay = osKernelSysTick() - last_tick;
+    // last_tick = osKernelSysTick();
+    // gui.process(task_delay);
     for(int i = 0; i < 1000; i++)
     {
       sprintf(buffer, "%3d", i);
@@ -153,10 +154,7 @@ void startGUITask(void const *argument)
       printf("called redraw\n");
       osDelay(50);
       fb.clear();
-    }
-
-    // guiMan.get()->tick();
-    // guiMan.get()->draw();
+    } 
   }
 }
 /**
@@ -189,7 +187,6 @@ void startIMUTask(void const *argument)
   }
 }
 
-
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM4 interrupt took place, inside
@@ -215,10 +212,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   */
 void assert_failed(uint8_t *file, uint32_t line)
 { 
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
+  printf("Assert: file %s on line %d\r\n", file, line);
 }
 #endif /* USE_FULL_ASSERT */
 

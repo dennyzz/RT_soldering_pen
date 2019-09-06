@@ -13,9 +13,9 @@ int x = 10;
 
 public:
     // Debug(GUIManager &screen_manager) : screen_manager(screen_manager) {}
-	void tick()
+	void update()
 	{
-		i++;
+		
 	}
     void draw() {
     	char buffer[16];

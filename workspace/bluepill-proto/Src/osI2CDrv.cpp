@@ -99,12 +99,12 @@ void oSI2CDrv::Transmit(uint16_t DevAddress, uint8_t* pData, uint16_t Size) {
 		// RToS is active, run threading
 		// Get the mutex so we can use the I2C port
 		// Wait up to 1 second for the mutex
-		if (xSemaphoreTake(I2CSem, (TickType_t)50) == pdTRUE) {
+		if (xSemaphoreTake(I2CSem, (TickType_t)portTICK_PERIOD_MS) == pdTRUE) {
 #ifdef I2CUSESDMA
 
 			if (HAL_I2C_Master_Transmit_DMA(i2c, DevAddress, pData, Size)
 					!= HAL_OK) {
-
+				printf("i2c tx ERROR\n");
 				I2C1_ClearBusyFlagErratum();
 				xSemaphoreGive(I2CSem);
 

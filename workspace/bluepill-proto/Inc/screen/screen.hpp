@@ -14,12 +14,12 @@ enum ScreenId {
     MAX
 };
 
-class GUIManager {
+class ScreenHolder {
 	ScreenId screen_id = ScreenId::DEBUG;
 	Screen **screen_list;
 
 public:
-    GUIManager(Screen **list) :
+    ScreenHolder(Screen **list) :
         screen_list(list) {}
 
     void set(ScreenId id) {
@@ -36,18 +36,19 @@ public:
 class Screen {
 protected:
 	Display::FrameBuff &fb = display.get_fb();
-    GUIManager &screen_manager;
+    // base class needs something to point back to the holder
+    ScreenHolder &screen_holder;
 	void change_screen(ScreenId id) {
-		screen_manager.set(id);
+		screen_holder.set(id);
 	}
 
 public:
-    Screen(GUIManager &screen_manager) : screen_manager(screen_manager) {}
+    Screen(ScreenHolder &screen_holder) : screen_holder(screen_holder) {}
 
     virtual bool button_up(int act) { return false; };
     virtual bool button_dn(int act) { return false; };
     virtual bool button_both(int act) { return false; };
-    virtual void tick() = 0;
+    virtual void update() = 0;
     virtual void draw() = 0;
 };
 
