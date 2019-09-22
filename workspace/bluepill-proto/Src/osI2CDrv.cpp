@@ -8,7 +8,8 @@
 #include "hardware.h"
 #include "semphr.h"
 
-#define I2CUSESDMA
+#undef I2CUSESDMA
+// #define I2CUSESDMA
 
 I2C_HandleTypeDef* oSI2CDrv::i2c;
 SemaphoreHandle_t oSI2CDrv::I2CSem;
@@ -121,6 +122,7 @@ void oSI2CDrv::Transmit(uint16_t DevAddress, uint8_t* pData, uint16_t Size) {
 }
 
 void oSI2CDrv::I2C1_ClearBusyFlagErratum() {
+	printf("ran Clear Busy Flag?\n");
 	GPIO_InitTypeDef GPIO_InitStruct;
 	int timeout = 100;
 	int timeout_cnt = 0;

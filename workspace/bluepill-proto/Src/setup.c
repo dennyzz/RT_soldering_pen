@@ -30,8 +30,8 @@ void Setup_HAL() {
   SystemClock_Config();
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
   MX_DMA_Init();
+  MX_GPIO_Init();
   MX_I2C1_Init();
   MX_ADC1_Init();
   MX_ADC2_Init();
@@ -306,10 +306,9 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(i2cHandle->Instance==I2C1)
   {
-  /* USER CODE BEGIN I2C1_MspInit 0 */
-
-  /* USER CODE END I2C1_MspInit 0 */
-  
+    /* I2C1 clock enable */
+    __HAL_RCC_I2C1_CLK_ENABLE();
+    __HAL_AFIO_REMAP_I2C1_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     /**I2C1 GPIO Configuration    
     PB8     ------> I2C1_SCL
@@ -318,13 +317,9 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
     GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    // GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    __HAL_AFIO_REMAP_I2C1_ENABLE();
-
-    /* I2C1 clock enable */
-    __HAL_RCC_I2C1_CLK_ENABLE();
   
     /* I2C1 DMA Init */
     /* I2C1_TX Init */
@@ -358,10 +353,6 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
     }
 
     __HAL_LINKDMA(i2cHandle,hdmarx,hdma_i2c1_rx);
-
-  /* USER CODE BEGIN I2C1_MspInit 1 */
-
-  /* USER CODE END I2C1_MspInit 1 */
   }
 }
 

@@ -22,6 +22,7 @@
 // #include "main.hpp"
 #include "stm32f1xx_it.h"
 #include "cmsis_os.h"
+#include "hardware.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */

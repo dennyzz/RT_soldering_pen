@@ -90,7 +90,7 @@ int main(void)
   IMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
 
   volatile uint32_t size = xPortGetFreeHeapSize();
-  printf("Heap size:%d bytes\n", size);
+  printf("Heap size:%d bytes\n", (int)size);
   // breakpoint if task fails to create
   if (IMUTaskHandle == 0)
     asm("bkpt");
@@ -151,7 +151,6 @@ void startGUITask(void const *argument)
       x = fb.draw_text(50, 10, buffer, Font::num22);
       fb.draw_text(x, 10, "\260F", Font::num7);
       display.redraw();
-      printf("called redraw\n");
       osDelay(50);
       fb.clear();
     } 
