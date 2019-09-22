@@ -26,6 +26,7 @@
 #include "oSI2CDrv.hpp"
 #include "display.hpp"
 #include "screen/screen.hpp"
+#include "screen/GUI.hpp"
 #include "font.hpp"
 
 /* Private includes ----------------------------------------------------------*/
@@ -130,30 +131,32 @@ void StartDefaultTask(void const * argument)
 void startGUITask(void const *argument)
 {
   printf("GUI Task Initializing\n");
-  // screen::GUI gui()
-  display.init();
-  Display::FrameBuff &fb = display.get_fb();
-  char buffer[10];
-  uint16_t x = 0;
-  uint16_t y = 0;
+  screen::GUI gui;
+  gui.init();
+  // display.init();
+  // Display::FrameBuff &fb = display.get_fb();
+  // char buffer[10];
+  // uint16_t x = 0;
+  // uint16_t y = 0;
   printf("GUI Task Started\n");
-  // uint32_t last_tick = osKernelSysTick();
-  // uint32_t task_delay;
+  uint32_t last_tick = osKernelSysTick();
+  uint32_t task_delay;
   for(;;)
   {
-    // osDelayUntil (&last_tick, 25);
-    // task_delay = osKernelSysTick() - last_tick;
-    // last_tick = osKernelSysTick();
-    // gui.process(task_delay);
-    for(int i = 0; i < 1000; i++)
-    {
-      sprintf(buffer, "%3d", i);
-      x = fb.draw_text(50, 10, buffer, Font::num22);
-      fb.draw_text(x, 10, "\260F", Font::num7);
-      display.redraw();
-      osDelay(50);
-      fb.clear();
-    } 
+    osDelayUntil (&last_tick, 25);
+    task_delay = osKernelSysTick() - last_tick;
+    last_tick = osKernelSysTick();
+    gui.process(task_delay);
+    gui.draw();
+    // for(int i = 0; i < 1000; i++)
+    // {
+    //   sprintf(buffer, "%3d", i);
+    //   x = fb.draw_text(50, 10, buffer, Font::num22);
+    //   fb.draw_text(x, 10, "\260F", Font::num7);
+    //   display.redraw();
+    //   osDelay(50);
+    //   fb.clear();
+    // } 
   }
 }
 /**

@@ -4,21 +4,26 @@
 #include "display.hpp"
 #include "screen/screen.hpp"
 #include "screen/debug.hpp"
+#include "screen/splash.hpp"
+namespace screen{
 
 class GUI {
     screen::ScreenHolder screen_holder;
 
     // instantiate all screens
+    screen::Splash screen_main;
+    screen::Splash screen_menu;
     screen::Debug screen_debug;
     screen::Splash screen_splash;
+
     // screen::Menu screen_menu;
 
     // Settings &_settings;
 
     // add all screens to the holder
-    screen::Screen *screens[static_cast<int>(screen::ScreenId::COUNT)] = {
-        // &_screen_main,
-        // &_screen_menu,
+    screen::Screen *screens[static_cast<int>(screen::ScreenId::MAX)] = {
+        &screen_main,
+        &screen_menu,
         &screen_debug,
         &screen_splash,
     };
@@ -58,19 +63,28 @@ class GUI {
     //     if (_screen_holder.get()->button_both(btn_action_both)) _button_both.block();
     // }
 
+    Display::FrameBuff &fb = display.get_fb();
 
 public:
 
     // GUI(Heating &heating, Settings &settings) :
     GUI() : 
         screen_holder(screens),
-        screen_debug(screen_holder), {}
+        screen_main(screen_holder),
+        screen_menu(screen_holder),
+        screen_debug(screen_holder),
+		screen_splash(screen_holder) {}
         // _screen_main(_screen_holder, heating, settings),
         // _screen_menu(_screen_holder, heating, settings),
         // _settings(settings) {}
 
+    void init(void)
+    {
+        display.init();   
+    }
     void process(unsigned delta_ticks) {
-        _buttons_process_fast(delta_ticks);
+        //_buttons_process_fast(delta_ticks);
+        screen_holder.get()->update();
     }
 
     void draw() {
@@ -80,7 +94,7 @@ public:
         //     rotation_last = rotation;
         //     board::display.rotate(rotation, rotation);
         // }
-        Display::FrameBuff &fb = display.get_fb();
+
         fb.clear();
         screen_holder.get()->draw();
         display.redraw();
@@ -88,5 +102,6 @@ public:
 
 };
 
+}
 
 #endif //___GUI_HPP__

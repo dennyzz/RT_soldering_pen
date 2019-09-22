@@ -15,7 +15,7 @@ enum ScreenId {
 };
 
 class ScreenHolder {
-	ScreenId screen_id = ScreenId::DEBUG;
+	ScreenId screen_id = ScreenId::MAIN;
 	Screen **screen_list;
 
 public:
@@ -34,16 +34,17 @@ public:
 
 /* base class for all Screen displays */
 class Screen {
+    ScreenHolder &screen_holder;
 protected:
 	Display::FrameBuff &fb = display.get_fb();
     // base class needs something to point back to the holder
-    ScreenHolder &screen_holder;
+
 	void change_screen(ScreenId id) {
 		screen_holder.set(id);
 	}
 
 public:
-    Screen(ScreenHolder &screen_holder) : screen_holder(screen_holder) {}
+    Screen(ScreenHolder &init_screen_holder) : screen_holder(init_screen_holder) {}
 
     virtual bool button_up(int act) { return false; };
     virtual bool button_dn(int act) { return false; };
