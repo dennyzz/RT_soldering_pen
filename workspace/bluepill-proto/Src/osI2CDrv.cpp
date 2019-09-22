@@ -8,8 +8,7 @@
 #include "hardware.h"
 #include "semphr.h"
 
-#undef I2CUSESDMA
-// #define I2CUSESDMA
+#define I2CUSESDMA
 
 I2C_HandleTypeDef* oSI2CDrv::i2c;
 SemaphoreHandle_t oSI2CDrv::I2CSem;
@@ -189,4 +188,37 @@ void oSI2CDrv::I2C1_ClearBusyFlagErratum() {
 
 	// Call initialization function.
 	HAL_I2C_Init(i2c);
+}
+
+/**
+  * @brief This function handles I2C transfer interrupts.
+  */
+void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    oSI2CDrv::CpltCallback();
+}
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    oSI2CDrv::CpltCallback();
+}
+
+void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    oSI2CDrv::CpltCallback();
+}
+
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    oSI2CDrv::CpltCallback();
+}
+
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
+{
+    // asm("bkpt");
+    oSI2CDrv::CpltCallback();
+}
+
+void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    oSI2CDrv::CpltCallback();
 }
