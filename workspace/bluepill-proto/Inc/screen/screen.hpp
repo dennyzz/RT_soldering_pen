@@ -37,7 +37,6 @@ class Screen {
     ScreenHolder &screen_holder;
 protected:
 	Display::FrameBuff &fb = display.get_fb();
-    // base class needs something to point back to the holder
 
 	void change_screen(ScreenId id) {
 		screen_holder.set(id);

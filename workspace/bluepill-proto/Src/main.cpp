@@ -46,6 +46,8 @@ osThreadId GUITaskHandle;
 osThreadId PIDTaskHandle;
 osThreadId IMUTaskHandle;
 
+Heater_struct heater;
+
 /* Private function prototypes -----------------------------------------------*/
 void StartDefaultTask(void const * argument);
 void startGUITask(void const *argument);
@@ -84,10 +86,10 @@ int main(void)
   osThreadDef(GUITask, startGUITask, osPriorityNormal, 0, 2048 / 4);
   GUITaskHandle = osThreadCreate(osThread(GUITask), NULL);
 
-  osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 256 / 4);
+  osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 512 / 4);
   PIDTaskHandle = osThreadCreate(osThread(PIDTask), NULL);
 
-  osThreadDef(IMUTask, startIMUTask, osPriorityNormal, 0, 256 / 4);
+  osThreadDef(IMUTask, startIMUTask, osPriorityNormal, 0, 512 / 4);
   IMUTaskHandle = osThreadCreate(osThread(IMUTask), NULL);
 
   volatile uint32_t size = xPortGetFreeHeapSize();
@@ -123,7 +125,7 @@ void StartDefaultTask(void const * argument)
   }
 }
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the startGUITask thread.
   * @param  argument: Not used 
   * @retval None
   */
@@ -131,13 +133,9 @@ void StartDefaultTask(void const * argument)
 void startGUITask(void const *argument)
 {
   printf("GUI Task Initializing\n");
-  screen::GUI gui;
+  screen::GUI gui(heater);
+  osDelay(500); // delay for hw startup fix with reset pin later
   gui.init();
-  // display.init();
-  // Display::FrameBuff &fb = display.get_fb();
-  // char buffer[10];
-  // uint16_t x = 0;
-  // uint16_t y = 0;
   printf("GUI Task Started\n");
   uint32_t last_tick = osKernelSysTick();
   uint32_t task_delay;
@@ -148,35 +146,66 @@ void startGUITask(void const *argument)
     last_tick = osKernelSysTick();
     gui.process(task_delay);
     gui.draw();
-    // for(int i = 0; i < 1000; i++)
-    // {
-    //   sprintf(buffer, "%3d", i);
-    //   x = fb.draw_text(50, 10, buffer, Font::num22);
-    //   fb.draw_text(x, 10, "\260F", Font::num7);
-    //   display.redraw();
-    //   osDelay(50);
-    //   fb.clear();
-    // } 
   }
 }
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the startPIDTask thread.
   * @param  argument: Not used 
   * @retval None
   */
 void startPIDTask(void const *argument)
 {
+  printf("PID Task Initializing\n");
+  // needs to call adc runs for voltage/current/current/
+  uint32_t adcbuf[64];
+  heater.vin = 4096;
+  heater.i1 = 4096;
+  heater.i2 = 4096;
+  heater.ttip = 4096;
+  heater.tamb = 4096;
+  HAL_ADC_Start(&hadc2);
+  HAL_ADCEx_MultiModeStart_DMA(&hadc1, adcbuf, 64);
+  // HAL_ADC_ConvCpltCallback
+  // HAL_ADCEx_MultiModeStop_DMA
+  // HAL_ADC_Stop_IT
   printf("PID Task Started\n");
   for(;;)
   {
     osDelay(100);
-    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-    osDelay(100);
-    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+    heater.vin--;
+    if(heater.vin < 1000)
+    {
+      heater.vin = 4000;
+    }
+    
+    heater.i1--;
+    if(heater.i1 < 1000)
+    {
+      heater.i1 = 4000;
+    }
+    
+    heater.i2--;
+    if(heater.i2 < 1000)
+    {
+      heater.i2 = 4000;
+    }
+    
+    heater.ttip--;
+    if(heater.ttip < 1000)
+    {
+      heater.ttip = 4000;
+    }
+    
+    heater.tamb--;
+    if(heater.tamb < 1000)
+    {
+      heater.tamb = 4000;
+    }
   }
 }
+
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the startIMUTask thread.
   * @param  argument: Not used 
   * @retval None
   */
@@ -185,7 +214,10 @@ void startIMUTask(void const *argument)
   printf("IMU Task Started\n");
   for(;;)
   {
-    osDelay(100);
+    osDelay(500);
+    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+    osDelay(500);
+    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
   }
 }
 
@@ -201,6 +233,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM4) {
     HAL_IncTick();
+  }
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+  if (hadc->Instance == ADC1)
+  {
+    printf("ADC1\n");
+  }
+  else if (hadc->Instance == ADC2)
+  {
+    printf("ADC2\n");
   }
 }
 

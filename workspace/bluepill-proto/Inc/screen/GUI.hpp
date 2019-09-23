@@ -17,14 +17,14 @@ class GUI {
     screen::Splash screen_splash;
 
     // screen::Menu screen_menu;
-
+    Heater_struct &heater;
     // Settings &_settings;
 
     // add all screens to the holder
     screen::Screen *screens[static_cast<int>(screen::ScreenId::MAX)] = {
+        &screen_debug,
         &screen_main,
         &screen_menu,
-        &screen_debug,
         &screen_splash,
     };
 
@@ -68,12 +68,13 @@ class GUI {
 public:
 
     // GUI(Heating &heating, Settings &settings) :
-    GUI() : 
+    GUI(Heater_struct &heating) : 
         screen_holder(screens),
         screen_main(screen_holder),
         screen_menu(screen_holder),
-        screen_debug(screen_holder),
-		screen_splash(screen_holder) {}
+        screen_debug(screen_holder, heating),
+		screen_splash(screen_holder), 
+        heater(heating) {}
         // _screen_main(_screen_holder, heating, settings),
         // _screen_menu(_screen_holder, heating, settings),
         // _settings(settings) {}

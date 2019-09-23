@@ -31,7 +31,6 @@ const uint8_t Display::init_cmds[] = {
 
 void Display::init()
 {
-    printf("Display::init()\n");
     fb_cmds.frame.clear();
     oSI2CDrv::init(&hi2c1);
     oSI2CDrv::oSInit();
@@ -43,7 +42,6 @@ void Display::init()
 
 void Display::redraw()
 {
-    printf("Display::redraw()\n");
     // oSI2CDrv::Transmit(0xAA, (uint8_t*)fb_cmds.dummy, 2);
     oSI2CDrv::Transmit(DISP_ADDR, fb_cmds.display_buffer_cmds, fb_cmds.size);
 }

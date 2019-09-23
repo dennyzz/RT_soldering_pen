@@ -1,6 +1,8 @@
 #ifndef _SPLASHSCREEN_H_
 #define _SPLASHSCREEN_H_
 #include "font.hpp"
+#include "screen/screen.hpp"
+#include "hardware.h"
 
 namespace screen {
 
@@ -8,7 +10,8 @@ class Splash : public Screen {
 
 private:
 	bool loaded = false;
-	char buffer[16];
+	int i;
+	char buffer[20];
 	void loadFromFlash(void){
 		// image will be stored at 2nd to last KB in flash memory or page
 		// should be some kind of header bytes maybe "IMG" in ascii?  + 512 bytes of image
@@ -21,6 +24,9 @@ public:
 	void update()
 	{
 		printf("Splash::update()\n");
+		i++;
+		if(i > 999)
+			i = 0;
 	};
 
 	// draw functions assumes cleared fb, and adds all graphics to buffer
@@ -30,8 +36,10 @@ public:
 			printf("Splash::draw()\n");
 			//TODO: grab the image from flash and send to buffer
 			// instead of loading from flash for now we generate a dummy
-			sprintf(buffer, "dummy text");
+			sprintf(buffer, "Splash screen");
 			fb.draw_text(5, 5, buffer, Font::sans8);
+			sprintf(buffer, "%3d", i);
+			fb.draw_text(84, 2, buffer, Font::num22);
 			// loaded = true;
 		}
 	};

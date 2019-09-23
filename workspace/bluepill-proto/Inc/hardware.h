@@ -9,6 +9,14 @@
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 
+typedef struct Heater{
+  uint32_t vin;
+  uint32_t i1;
+  uint32_t i2;
+  uint32_t ttip;
+  uint32_t tamb;
+} Heater_struct;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,7 +49,11 @@ void Error_Handler(void);
 #define SCL_GPIO_Port GPIOB
 #define LED3_Pin GPIO_PIN_13
 #define LED3_GPIO_Port GPIOC
-	
+// PA0     ------> ADC1_IN0 Vin
+// PA1     ------> ADC1_IN1 Iin1
+// PA2     ------> ADC1_IN2 Iin2
+// PA3     ------> ADC1_IN3 Ttemp
+// PA4     ------> ADC1_IN4 Ttip
 
 #else
 	#warning "no hardware defined"
