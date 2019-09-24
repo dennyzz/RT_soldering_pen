@@ -15,6 +15,7 @@ typedef struct Heater{
   uint32_t i2;
   uint32_t ttip;
   uint32_t tamb;
+  uint32_t tint;
 } Heater_struct;
 
 #ifdef __cplusplus
@@ -49,11 +50,12 @@ void Error_Handler(void);
 #define SCL_GPIO_Port GPIOB
 #define LED3_Pin GPIO_PIN_13
 #define LED3_GPIO_Port GPIOC
-// PA0     ------> ADC1_IN0 Vin
-// PA1     ------> ADC1_IN1 Iin1
-// PA2     ------> ADC1_IN2 Iin2
-// PA3     ------> ADC1_IN3 Ttemp
-// PA4     ------> ADC1_IN4 Ttip
+#define VSENSE_CHAN ADC_CHANNEL_0
+#define ISENSE1_CHAN ADC_CHANNEL_1
+#define ISENSE2_CHAN ADC_CHANNEL_2
+#define TEMP_AMB_CHAN ADC_CHANNEL_3
+#define TEMP_TIP_CHAN ADC_CHANNEL_4
+
 
 #else
 	#warning "no hardware defined"

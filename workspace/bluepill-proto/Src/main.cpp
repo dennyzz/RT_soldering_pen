@@ -153,57 +153,78 @@ void startGUITask(void const *argument)
   * @param  argument: Not used 
   * @retval None
   */
+SemaphoreHandle_t ADCSem;
 void startPIDTask(void const *argument)
 {
-  printf("PID Task Initializing\n");
-  // needs to call adc runs for voltage/current/current/
   uint32_t adcbuf[64];
+  uint32_t starttick;
+  ADCSem = xSemaphoreCreateBinary();
+  printf("PID Task Initializing\n");
+  HAL_ADCEx_Calibration_Start(&hadc1);
+  HAL_ADCEx_Calibration_Start(&hadc2);
+  printf("finished ADC CAL\n");
   heater.vin = 4096;
   heater.i1 = 4096;
   heater.i2 = 4096;
   heater.ttip = 4096;
   heater.tamb = 4096;
+  heater.tint = 4096;
+  starttick = osKernelSysTick();
   HAL_ADC_Start(&hadc2);
-  HAL_ADCEx_MultiModeStart_DMA(&hadc1, adcbuf, 64);
+  HAL_ADCEx_MultiModeStart_DMA(&hadc1, adcbuf, 16);
   // HAL_ADC_ConvCpltCallback
   // HAL_ADCEx_MultiModeStop_DMA
   // HAL_ADC_Stop_IT
+  printf("waiting on semaphore take\n");
+  if (xSemaphoreTake(ADCSem, (TickType_t)1000) == pdTRUE) {
+    // HAL_ADCEx_MultiModeStop_DMA(&hadc1);
+    uint16_t* adcwords = (uint16_t*)adcbuf;
+    uint32_t endtick = osKernelSysTick();
+    printf("took: %d ticks\n", (int)(endtick - starttick));
+    printf("ADC1\n");
+    {
+      for(int i = 1; i < 4; i++)
+      {
+        adcbuf[0] += adcbuf[i*4+0];
+        adcbuf[1] += adcbuf[i*4+1];
+        adcbuf[2] += adcbuf[i*4+2];
+        adcbuf[3] += adcbuf[i*4+3];
+      }
+    }
+    printf("\nData\n");
+    for(int i = 0; i < 8; i+=4)
+    {
+      printf("0x%04x 0x%04x 0x%04x 0x%04x\n", adcwords[i], adcwords[i+1], adcwords[i+2], adcwords[i+3]);
+    } 
+    printf("\n");
+  }
   printf("PID Task Started\n");
   for(;;)
   {
     osDelay(100);
-    heater.vin--;
-    if(heater.vin < 1000)
-    {
-      heater.vin = 4000;
-    }
-    
-    heater.i1--;
-    if(heater.i1 < 1000)
-    {
-      heater.i1 = 4000;
-    }
-    
-    heater.i2--;
-    if(heater.i2 < 1000)
-    {
-      heater.i2 = 4000;
-    }
-    
-    heater.ttip--;
-    if(heater.ttip < 1000)
-    {
-      heater.ttip = 4000;
-    }
-    
-    heater.tamb--;
-    if(heater.tamb < 1000)
-    {
-      heater.tamb = 4000;
+    printf("start adc call\n");
+    HAL_ADC_Start(&hadc2);
+    HAL_ADCEx_MultiModeStart_DMA(&hadc1, adcbuf, 16);
+    if (xSemaphoreTake(ADCSem, (TickType_t)1000) == pdTRUE) {
+      // HAL_ADCEx_MultiModeStop_DMA(&hadc1);
+      printf("dma returned\n");
+      uint16_t* adcwords = (uint16_t*)adcbuf;
+      for(int i = 1; i < 4; i++)
+      {
+        adcbuf[0] += adcbuf[i*4+0];
+        adcbuf[1] += adcbuf[i*4+1];
+        adcbuf[2] += adcbuf[i*4+2];
+        adcbuf[3] += adcbuf[i*4+3];
+      }
+      heater.vin = adcwords[0]; // and
+      heater.i1 = adcwords[1];
+      heater.i2 = adcwords[3];
+      heater.ttip = adcwords[4];
+      heater.tamb = adcwords[5];
+      heater.tint = adcwords[6];
     }
   }
 }
-
 /**
   * @brief  Function implementing the startIMUTask thread.
   * @param  argument: Not used 
@@ -214,9 +235,9 @@ void startIMUTask(void const *argument)
   printf("IMU Task Started\n");
   for(;;)
   {
-    osDelay(500);
+    osDelay(100);
     HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-    osDelay(500);
+    osDelay(100);
     HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
   }
 }
@@ -240,7 +261,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
   if (hadc->Instance == ADC1)
   {
-    printf("ADC1\n");
+    // if (ADCSem) {
+      xSemaphoreGiveFromISR(ADCSem, NULL);
+      // xSemaphoreGive(ADCSem, NULL);
+    // }
   }
   else if (hadc->Instance == ADC2)
   {

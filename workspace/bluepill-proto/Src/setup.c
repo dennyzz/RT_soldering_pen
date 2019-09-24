@@ -87,85 +87,108 @@ void SystemClock_Config(void)
   }
 }
 
+/* Helper function to configure channels */
+static void MX_ADC_Channel_Config(ADC_HandleTypeDef* hadc, uint32_t *channels, uint32_t sampleTime, uint32_t numChan)
+{
+  assert_param(numChan <= ADC_REGULAR_RANK_16);
+  ADC_ChannelConfTypeDef sConfig = {0};
+  for (int i = 0; i < numChan; i++)
+  {
+    sConfig.Channel = channels[i];
+    sConfig.Rank = i+1;
+    sConfig.SamplingTime = sampleTime;
+    if (HAL_ADC_ConfigChannel(hadc, &sConfig) != HAL_OK)
+    {
+      Error_Handler();
+    }
+  }
+  return;
+}
+
 /* ADC1 init function */
 static void MX_ADC1_Init(void)
 {
   ADC_MultiModeTypeDef multimode = {0};
-  ADC_ChannelConfTypeDef sConfig = {0};
-  ADC_InjectionConfTypeDef sConfigInjected = {0};
-
   /** Common config 
   */
+  const int NUM_CHANNELS = 16;
+  uint32_t channels[NUM_CHANNELS];
+  channels[0] = VSENSE_CHAN;
+  channels[1] = VSENSE_CHAN;
+  channels[2] = TEMP_TIP_CHAN;
+  channels[3] = ADC_CHANNEL_TEMPSENSOR;
+  channels[4] = VSENSE_CHAN;
+  channels[5] = VSENSE_CHAN;
+  channels[6] = TEMP_TIP_CHAN;
+  channels[7] = ADC_CHANNEL_TEMPSENSOR;
+  channels[8] = VSENSE_CHAN;
+  channels[9] = VSENSE_CHAN;
+  channels[10] = TEMP_TIP_CHAN;
+  channels[11] = ADC_CHANNEL_TEMPSENSOR;
+  channels[12] = VSENSE_CHAN;
+  channels[13] = VSENSE_CHAN;
+  channels[14] = TEMP_TIP_CHAN;
+  channels[15] = ADC_CHANNEL_TEMPSENSOR;
+
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.NbrOfConversion = NUM_CHANNELS;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
   }
   /** Configure the ADC multi-mode 
   */
-  multimode.Mode = ADC_DUALMODE_REGSIMULT_INJECSIMULT;
+  multimode.Mode = ADC_DUALMODE_REGSIMULT;
   if (HAL_ADCEx_MultiModeConfigChannel(&hadc1, &multimode) != HAL_OK)
   {
     Error_Handler();
   }
   /** Configure Regular Channel 
   */
-  sConfig.Channel = ADC_CHANNEL_0;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure Injected Channel 
-  */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_0;
-  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
-  sConfigInjected.InjectedNbrOfConversion = 1;
-  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  sConfigInjected.ExternalTrigInjecConv = ADC_INJECTED_SOFTWARE_START;
-  sConfigInjected.AutoInjectedConv = DISABLE;
-  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
-  sConfigInjected.InjectedOffset = 0;
-  if (HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
+  MX_ADC_Channel_Config(&hadc1, channels, ADC_SAMPLETIME_28CYCLES_5, NUM_CHANNELS);
 }
 /* ADC2 init function */
 static void MX_ADC2_Init(void)
 {
-  ADC_ChannelConfTypeDef sConfig = {0};
-
   /** Common config 
   */
+  const int NUM_CHANNELS = 16;
   hadc2.Instance = ADC2;
-  hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc2.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc2.Init.ContinuousConvMode = DISABLE;
   hadc2.Init.DiscontinuousConvMode = DISABLE;
   hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc2.Init.NbrOfConversion = 1;
+  hadc2.Init.NbrOfConversion = NUM_CHANNELS;
   if (HAL_ADC_Init(&hadc2) != HAL_OK)
   {
     Error_Handler();
   }
   /** Configure Regular Channel 
   */
-  sConfig.Channel = ADC_CHANNEL_1;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
+  uint32_t channels[NUM_CHANNELS];
+  channels[0] = ISENSE1_CHAN;
+  channels[1] = ISENSE2_CHAN;
+  channels[2] = TEMP_AMB_CHAN;
+  channels[3] = TEMP_AMB_CHAN;
+  channels[4] = ISENSE1_CHAN;
+  channels[5] = ISENSE2_CHAN;
+  channels[6] = TEMP_AMB_CHAN;
+  channels[7] = TEMP_AMB_CHAN;
+  channels[8] = ISENSE1_CHAN;
+  channels[9] = ISENSE2_CHAN;
+  channels[10] = TEMP_AMB_CHAN;
+  channels[11] = TEMP_AMB_CHAN;
+  channels[12] = ISENSE1_CHAN;
+  channels[13] = ISENSE2_CHAN;
+  channels[14] = TEMP_AMB_CHAN;
+  channels[15] = TEMP_AMB_CHAN;
+  MX_ADC_Channel_Config(&hadc2, channels, ADC_SAMPLETIME_28CYCLES_5, NUM_CHANNELS);
 
 }
 
@@ -314,7 +337,7 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 4, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
   /* DMA1_Channel6_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel6_IRQn, 5, 0);
