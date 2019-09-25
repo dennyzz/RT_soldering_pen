@@ -16,7 +16,6 @@ PCD_HandleTypeDef hpcd_USB_FS;
 WWDG_HandleTypeDef hwwdg;
 
 static void MX_ADC1_Init(void);
-static void MX_ADC2_Init(void);
 static void MX_DMA_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
@@ -35,7 +34,6 @@ void Setup_HAL() {
   MX_DMA_Init();
   MX_I2C1_Init();
   MX_ADC1_Init();
-  MX_ADC2_Init();
   // MX_IWDG_Init();
   // MX_WWDG_Init();
   // MX_USB_PCD_Init();
@@ -111,28 +109,22 @@ static void MX_ADC1_Init(void)
   ADC_MultiModeTypeDef multimode = {0};
   /** Common config 
   */
-  const int NUM_CHANNELS = 16;
+  const int NUM_CHANNELS = 6;
   uint32_t channels[NUM_CHANNELS];
-  channels[0] = VSENSE_CHAN;
-  channels[1] = VSENSE_CHAN;
-  channels[2] = TEMP_TIP_CHAN;
-  channels[3] = ADC_CHANNEL_TEMPSENSOR;
-  channels[4] = VSENSE_CHAN;
-  channels[5] = VSENSE_CHAN;
-  channels[6] = TEMP_TIP_CHAN;
-  channels[7] = ADC_CHANNEL_TEMPSENSOR;
-  channels[8] = VSENSE_CHAN;
-  channels[9] = VSENSE_CHAN;
-  channels[10] = TEMP_TIP_CHAN;
-  channels[11] = ADC_CHANNEL_TEMPSENSOR;
-  channels[12] = VSENSE_CHAN;
-  channels[13] = VSENSE_CHAN;
-  channels[14] = TEMP_TIP_CHAN;
-  channels[15] = ADC_CHANNEL_TEMPSENSOR;
+  // channels[0] = VSENSE_CHAN;
+  // channels[1] = VSENSE_CHAN;
+  // channels[2] = TEMP_TIP_CHAN;
+  // channels[3] = ADC_CHANNEL_TEMPSENSOR;
+  channels[0] = ADC_CHANNEL_0;
+  channels[1] = ADC_CHANNEL_1;
+  channels[2] = ADC_CHANNEL_2;
+  channels[3] = ADC_CHANNEL_3;
+  channels[4] = ADC_CHANNEL_4;
+  channels[5] = ADC_CHANNEL_TEMPSENSOR;
 
   hadc1.Instance = ADC1;
   hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
-  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
@@ -141,56 +133,12 @@ static void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
-  /** Configure the ADC multi-mode 
-  */
-  multimode.Mode = ADC_DUALMODE_REGSIMULT;
-  if (HAL_ADCEx_MultiModeConfigChannel(&hadc1, &multimode) != HAL_OK)
-  {
-    Error_Handler();
-  }
+
   /** Configure Regular Channel 
   */
-  MX_ADC_Channel_Config(&hadc1, channels, ADC_SAMPLETIME_28CYCLES_5, NUM_CHANNELS);
+  MX_ADC_Channel_Config(&hadc1, channels, ADC_SAMPLETIME_71CYCLES_5, NUM_CHANNELS);
 }
 /* ADC2 init function */
-static void MX_ADC2_Init(void)
-{
-  /** Common config 
-  */
-  const int NUM_CHANNELS = 16;
-  hadc2.Instance = ADC2;
-  hadc2.Init.ScanConvMode = ADC_SCAN_ENABLE;
-  hadc2.Init.ContinuousConvMode = DISABLE;
-  hadc2.Init.DiscontinuousConvMode = DISABLE;
-  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc2.Init.NbrOfConversion = NUM_CHANNELS;
-  if (HAL_ADC_Init(&hadc2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure Regular Channel 
-  */
-  uint32_t channels[NUM_CHANNELS];
-  channels[0] = ISENSE1_CHAN;
-  channels[1] = ISENSE2_CHAN;
-  channels[2] = TEMP_AMB_CHAN;
-  channels[3] = TEMP_AMB_CHAN;
-  channels[4] = ISENSE1_CHAN;
-  channels[5] = ISENSE2_CHAN;
-  channels[6] = TEMP_AMB_CHAN;
-  channels[7] = TEMP_AMB_CHAN;
-  channels[8] = ISENSE1_CHAN;
-  channels[9] = ISENSE2_CHAN;
-  channels[10] = TEMP_AMB_CHAN;
-  channels[11] = TEMP_AMB_CHAN;
-  channels[12] = ISENSE1_CHAN;
-  channels[13] = ISENSE2_CHAN;
-  channels[14] = TEMP_AMB_CHAN;
-  channels[15] = TEMP_AMB_CHAN;
-  MX_ADC_Channel_Config(&hadc2, channels, ADC_SAMPLETIME_28CYCLES_5, NUM_CHANNELS);
-
-}
 
 void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 {
@@ -220,8 +168,8 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     hdma_adc1.Init.Direction = DMA_PERIPH_TO_MEMORY;
     hdma_adc1.Init.PeriphInc = DMA_PINC_DISABLE;
     hdma_adc1.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
-    hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+    hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
     hdma_adc1.Init.Mode = DMA_NORMAL;
     hdma_adc1.Init.Priority = DMA_PRIORITY_HIGH;
     if (HAL_DMA_Init(&hdma_adc1) != HAL_OK)
@@ -232,28 +180,6 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     __HAL_LINKDMA(adcHandle,DMA_Handle,hdma_adc1);
 
     /* ADC1 interrupt Init */
-    HAL_NVIC_SetPriority(ADC1_2_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
-  }
-  else if(adcHandle->Instance==ADC2)
-  {
-    /* ADC2 clock enable */
-    __HAL_RCC_ADC2_CLK_ENABLE();
-  
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**ADC2 GPIO Configuration    
-    PA0-WKUP     ------> ADC2_IN0
-    PA1     ------> ADC2_IN1
-    PA2     ------> ADC2_IN2
-    PA3     ------> ADC2_IN3
-    PA4     ------> ADC2_IN4 
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
-                          |GPIO_PIN_4;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    /* ADC2 interrupt Init */
     HAL_NVIC_SetPriority(ADC1_2_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
   }
@@ -340,10 +266,10 @@ static void MX_DMA_Init(void)
   HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
   /* DMA1_Channel6_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel6_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel6_IRQn, 6, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
   /* DMA1_Channel7_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel7_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel7_IRQn, 6, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
 
 }
@@ -465,9 +391,9 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
 
     __HAL_LINKDMA(i2cHandle,hdmarx,hdma_i2c1_rx);
 
-    HAL_NVIC_SetPriority(I2C1_EV_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(I2C1_EV_IRQn, 6, 0);
     HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
-    HAL_NVIC_SetPriority(I2C1_ER_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(I2C1_ER_IRQn, 6, 0);
     HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
   }
 }

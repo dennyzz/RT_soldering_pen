@@ -10,12 +10,18 @@
 #include "cmsis_os.h"
 
 typedef struct Heater{
-  uint32_t vin;
-  uint32_t i1;
-  uint32_t i2;
-  uint32_t ttip;
-  uint32_t tamb;
-  uint32_t tint;
+  // uint16_t vin;
+  // uint16_t i1;
+  // uint16_t i2;
+  // uint16_t ttip;
+  // uint16_t tamb;
+  // uint16_t tint;
+	uint16_t ch0;
+	uint16_t ch1;
+	uint16_t ch2;
+	uint16_t ch3;
+	uint16_t ch4;
+	uint16_t ch5;
 } Heater_struct;
 
 #ifdef __cplusplus

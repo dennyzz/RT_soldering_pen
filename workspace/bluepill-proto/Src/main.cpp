@@ -86,7 +86,7 @@ int main(void)
   osThreadDef(GUITask, startGUITask, osPriorityNormal, 0, 2048 / 4);
   GUITaskHandle = osThreadCreate(osThread(GUITask), NULL);
 
-  osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 512 / 4);
+  osThreadDef(PIDTask, startPIDTask, osPriorityRealtime, 0, 1024 / 4);
   PIDTaskHandle = osThreadCreate(osThread(PIDTask), NULL);
 
   osThreadDef(IMUTask, startIMUTask, osPriorityNormal, 0, 512 / 4);
@@ -154,77 +154,62 @@ void startGUITask(void const *argument)
   * @retval None
   */
 SemaphoreHandle_t ADCSem;
+uint16_t adcbuf[96];
 void startPIDTask(void const *argument)
 {
-  uint32_t adcbuf[64];
   uint32_t starttick;
+  uint32_t endtick;
   ADCSem = xSemaphoreCreateBinary();
   printf("PID Task Initializing\n");
   HAL_ADCEx_Calibration_Start(&hadc1);
-  HAL_ADCEx_Calibration_Start(&hadc2);
   printf("finished ADC CAL\n");
-  heater.vin = 4096;
-  heater.i1 = 4096;
-  heater.i2 = 4096;
-  heater.ttip = 4096;
-  heater.tamb = 4096;
-  heater.tint = 4096;
-  starttick = osKernelSysTick();
-  HAL_ADC_Start(&hadc2);
-  HAL_ADCEx_MultiModeStart_DMA(&hadc1, adcbuf, 16);
-  // HAL_ADC_ConvCpltCallback
-  // HAL_ADCEx_MultiModeStop_DMA
-  // HAL_ADC_Stop_IT
-  printf("waiting on semaphore take\n");
-  if (xSemaphoreTake(ADCSem, (TickType_t)1000) == pdTRUE) {
-    // HAL_ADCEx_MultiModeStop_DMA(&hadc1);
-    uint16_t* adcwords = (uint16_t*)adcbuf;
-    uint32_t endtick = osKernelSysTick();
-    printf("took: %d ticks\n", (int)(endtick - starttick));
-    printf("ADC1\n");
-    {
-      for(int i = 1; i < 4; i++)
-      {
-        adcbuf[0] += adcbuf[i*4+0];
-        adcbuf[1] += adcbuf[i*4+1];
-        adcbuf[2] += adcbuf[i*4+2];
-        adcbuf[3] += adcbuf[i*4+3];
-      }
-    }
-    printf("\nData\n");
-    for(int i = 0; i < 8; i+=4)
-    {
-      printf("0x%04x 0x%04x 0x%04x 0x%04x\n", adcwords[i], adcwords[i+1], adcwords[i+2], adcwords[i+3]);
-    } 
-    printf("\n");
-  }
   printf("PID Task Started\n");
   for(;;)
   {
     osDelay(100);
-    printf("start adc call\n");
-    HAL_ADC_Start(&hadc2);
-    HAL_ADCEx_MultiModeStart_DMA(&hadc1, adcbuf, 16);
-    if (xSemaphoreTake(ADCSem, (TickType_t)1000) == pdTRUE) {
-      // HAL_ADCEx_MultiModeStop_DMA(&hadc1);
-      printf("dma returned\n");
-      uint16_t* adcwords = (uint16_t*)adcbuf;
-      for(int i = 1; i < 4; i++)
+    starttick = osKernelSysTick();
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adcbuf, 96);
+    if (xSemaphoreTake(ADCSem, (TickType_t)1000) == pdTRUE) 
+    {
+      for(int i = 1; i < 16; i++)
       {
-        adcbuf[0] += adcbuf[i*4+0];
-        adcbuf[1] += adcbuf[i*4+1];
-        adcbuf[2] += adcbuf[i*4+2];
-        adcbuf[3] += adcbuf[i*4+3];
+        adcbuf[0] += adcbuf[i*6+0];
+        adcbuf[1] += adcbuf[i*6+1];
+        adcbuf[2] += adcbuf[i*6+2];
+        adcbuf[3] += adcbuf[i*6+3];
+        adcbuf[4] += adcbuf[i*6+4];
+        adcbuf[5] += adcbuf[i*6+5];
       }
-      heater.vin = adcwords[0]; // and
-      heater.i1 = adcwords[1];
-      heater.i2 = adcwords[3];
-      heater.ttip = adcwords[4];
-      heater.tamb = adcwords[5];
-      heater.tint = adcwords[6];
+      heater.ch0 = adcbuf[0];
+      heater.ch1 = adcbuf[1];
+      heater.ch2 = adcbuf[2];
+      heater.ch3 = adcbuf[3];
+      heater.ch4 = adcbuf[4];
+      heater.ch5 = adcbuf[5];
+      endtick = osKernelSysTick();
+      printf("dma took %d ticks\n", (int)(endtick - starttick));
+      for (int i = 0; i < 6; i++)
+      {
+        printf("0x%04x ", adcbuf[i]);
+      }
+      printf("\n");
+      // heater.vin = adcbuf[0]; // and
+      // heater.i1 = adcbuf[1];
+      // heater.vin = adcbuf[2]; // and
+      // heater.i2 = adcbuf[3];
+      // heater.ttip = adcbuf[4];
+      // heater.tamb = adcbuf[5];
+      // heater.tint = adcbuf[6];
+      // heater.tamb = adcbuf[7];
     }
   }
 }
+
+  // channels[0] = ADC_CHANNEL_1;      channels[0] = ADC_CHANNEL_0;
+  // channels[1] = ADC_CHANNEL_3;      channels[1] = ADC_CHANNEL_2;
+  // channels[2] = ADC_CHANNEL_TEMPSENSOR;      channels[2] = ADC_CHANNEL_4;
+  // channels[3] = ADC_CHANNEL_1;      channels[3] = ADC_CHANNEL_0;
+
 /**
   * @brief  Function implementing the startIMUTask thread.
   * @param  argument: Not used 
@@ -261,14 +246,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
   if (hadc->Instance == ADC1)
   {
-    // if (ADCSem) {
+    HAL_ADCEx_MultiModeStop_DMA(&hadc1);
+    if (ADCSem) {
       xSemaphoreGiveFromISR(ADCSem, NULL);
-      // xSemaphoreGive(ADCSem, NULL);
-    // }
-  }
-  else if (hadc->Instance == ADC2)
-  {
-    printf("ADC2\n");
+    }
   }
 }
 

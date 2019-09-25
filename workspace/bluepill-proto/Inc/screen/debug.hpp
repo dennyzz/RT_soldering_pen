@@ -31,18 +31,31 @@ public:
 private:
 	void draw_adc()
 	{
-		sprintf(buffer, "Vin:%5d", (int)heating.vin);
+		sprintf(buffer, "Ch0:%5d", (int)heating.ch0);
 		x = fb.draw_text(0, 0, buffer, Font::sans8);
-		sprintf(buffer, "I1:%5d", (int)heating.i1);
+		sprintf(buffer, "Ch1:%5d", (int)heating.ch1);
 		x = fb.draw_text(0, 10, buffer, Font::sans8);
-		sprintf(buffer, "I2:%5d", (int)heating.i2);
+		sprintf(buffer, "Ch2:%5d", (int)heating.ch2);
 		x = fb.draw_text(0, 20, buffer, Font::sans8);
-		sprintf(buffer, "Ttip:%5d", (int)heating.ttip);
+		sprintf(buffer, "Ch3:%5d", (int)heating.ch3);
 		x = fb.draw_text(64, 0, buffer, Font::sans8);
-		sprintf(buffer, "Tamb:%5d", (int)heating.tamb);
+		sprintf(buffer, "Ch4:%5d", (int)heating.ch4);
 		x = fb.draw_text(64, 10, buffer, Font::sans8);
-		sprintf(buffer, "Tint:%5d", (int)heating.tint);
-		x = fb.draw_text(64, 10, buffer, Font::sans8);
+		sprintf(buffer, "Ch5:%5d", (int)heating.ch5);
+		x = fb.draw_text(64, 20, buffer, Font::sans8);
+
+		// sprintf(buffer, "Vin:%5d", (int)heating.vin);
+		// x = fb.draw_text(0, 0, buffer, Font::sans8);
+		// sprintf(buffer, "I1:%5d", (int)heating.i1);
+		// x = fb.draw_text(0, 10, buffer, Font::sans8);
+		// sprintf(buffer, "I2:%5d", (int)heating.i2);
+		// x = fb.draw_text(0, 20, buffer, Font::sans8);
+		// sprintf(buffer, "Ttip:%5d", (int)heating.ttip);
+		// x = fb.draw_text(64, 0, buffer, Font::sans8);
+		// sprintf(buffer, "Tamb:%5d", (int)heating.tamb);
+		// x = fb.draw_text(64, 10, buffer, Font::sans8);
+		// sprintf(buffer, "Tint:%5d", (int)heating.tint);
+		// x = fb.draw_text(64, 20, buffer, Font::sans8);
 	}
 	void draw_counter()
 	{
