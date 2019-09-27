@@ -106,21 +106,17 @@ static void MX_ADC_Channel_Config(ADC_HandleTypeDef* hadc, uint32_t *channels, u
 /* ADC1 init function */
 static void MX_ADC1_Init(void)
 {
-  ADC_MultiModeTypeDef multimode = {0};
   /** Common config 
   */
-  const int NUM_CHANNELS = 6;
+  const int NUM_CHANNELS = 7;
   uint32_t channels[NUM_CHANNELS];
-  // channels[0] = VSENSE_CHAN;
-  // channels[1] = VSENSE_CHAN;
-  // channels[2] = TEMP_TIP_CHAN;
-  // channels[3] = ADC_CHANNEL_TEMPSENSOR;
-  channels[0] = ADC_CHANNEL_0;
-  channels[1] = ADC_CHANNEL_1;
-  channels[2] = ADC_CHANNEL_2;
-  channels[3] = ADC_CHANNEL_3;
-  channels[4] = ADC_CHANNEL_4;
+  channels[0] = VSENSE_CHAN;
+  channels[1] = ISENSE1_CHAN;
+  channels[2] = ISENSE2_CHAN;
+  channels[3] = TEMP_AMB_CHAN;
+  channels[4] = TEMP_TIP_CHAN;
   channels[5] = ADC_CHANNEL_TEMPSENSOR;
+  channels[6] = ADC_CHANNEL_VREFINT;
 
   hadc1.Instance = ADC1;
   hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;

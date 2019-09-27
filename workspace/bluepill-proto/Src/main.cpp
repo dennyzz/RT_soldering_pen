@@ -24,6 +24,7 @@
 #include "setup.h"
 #include "hardware.h"
 #include "oSI2CDrv.hpp"
+#include "AdcDrv.hpp"
 #include "display.hpp"
 #include "screen/screen.hpp"
 #include "screen/GUI.hpp"
@@ -153,62 +154,19 @@ void startGUITask(void const *argument)
   * @param  argument: Not used 
   * @retval None
   */
-SemaphoreHandle_t ADCSem;
-uint16_t adcbuf[96];
+
 void startPIDTask(void const *argument)
 {
-  uint32_t starttick;
-  uint32_t endtick;
-  ADCSem = xSemaphoreCreateBinary();
   printf("PID Task Initializing\n");
-  HAL_ADCEx_Calibration_Start(&hadc1);
-  printf("finished ADC CAL\n");
+  AdcDrv::init(&hadc1, 7);
   printf("PID Task Started\n");
   for(;;)
   {
     osDelay(100);
-    starttick = osKernelSysTick();
-    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adcbuf, 96);
-    if (xSemaphoreTake(ADCSem, (TickType_t)1000) == pdTRUE) 
-    {
-      for(int i = 1; i < 16; i++)
-      {
-        adcbuf[0] += adcbuf[i*6+0];
-        adcbuf[1] += adcbuf[i*6+1];
-        adcbuf[2] += adcbuf[i*6+2];
-        adcbuf[3] += adcbuf[i*6+3];
-        adcbuf[4] += adcbuf[i*6+4];
-        adcbuf[5] += adcbuf[i*6+5];
-      }
-      heater.ch0 = adcbuf[0];
-      heater.ch1 = adcbuf[1];
-      heater.ch2 = adcbuf[2];
-      heater.ch3 = adcbuf[3];
-      heater.ch4 = adcbuf[4];
-      heater.ch5 = adcbuf[5];
-      endtick = osKernelSysTick();
-      printf("dma took %d ticks\n", (int)(endtick - starttick));
-      for (int i = 0; i < 6; i++)
-      {
-        printf("0x%04x ", adcbuf[i]);
-      }
-      printf("\n");
-      // heater.vin = adcbuf[0]; // and
-      // heater.i1 = adcbuf[1];
-      // heater.vin = adcbuf[2]; // and
-      // heater.i2 = adcbuf[3];
-      // heater.ttip = adcbuf[4];
-      // heater.tamb = adcbuf[5];
-      // heater.tint = adcbuf[6];
-      // heater.tamb = adcbuf[7];
-    }
+    AdcDrv::measure();
+    AdcDrv::getValues(heater);
   }
 }
-
-  // channels[0] = ADC_CHANNEL_1;      channels[0] = ADC_CHANNEL_0;
-  // channels[1] = ADC_CHANNEL_3;      channels[1] = ADC_CHANNEL_2;
-  // channels[2] = ADC_CHANNEL_TEMPSENSOR;      channels[2] = ADC_CHANNEL_4;
-  // channels[3] = ADC_CHANNEL_1;      channels[3] = ADC_CHANNEL_0;
 
 /**
   * @brief  Function implementing the startIMUTask thread.
@@ -239,17 +197,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM4) {
     HAL_IncTick();
-  }
-}
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-  if (hadc->Instance == ADC1)
-  {
-    HAL_ADCEx_MultiModeStop_DMA(&hadc1);
-    if (ADCSem) {
-      xSemaphoreGiveFromISR(ADCSem, NULL);
-    }
   }
 }
 
