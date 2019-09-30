@@ -14,9 +14,9 @@ typedef struct Heater{
   uint16_t vint;
   uint16_t i1;
   uint16_t i2;
-  uint16_t ttip;
-  uint16_t tamb;
-  uint16_t tint;
+  int16_t ttip;
+  int16_t tamb;
+  int16_t tint;
 } Heater_struct;
 
 #ifdef __cplusplus
@@ -43,8 +43,13 @@ void Error_Handler(void);
 // #define SWCLK_GPIO_Port GPIOA
 // #define VCP_RX_Pin GPIO_PIN_15
 // #define VCP_RX_GPIO_Port GPIOA
-// #define LD3_Pin GPIO_PIN_3
-// #define LD3_GPIO_Port GPIOB
+
+#define BTN_UP_Pin GPIO_PIN_13
+#define BTN_UP_GPIO_Port GPIOB
+
+#define BTN_DWN_Pin GPIO_PIN_12
+#define BTN_DWN_GPIO_Port GPIOB
+
 #define SDA_Pin GPIO_PIN_9
 #define SDA_GPIO_Port GPIOB
 #define SCL_Pin GPIO_PIN_8

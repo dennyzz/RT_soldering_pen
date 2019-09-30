@@ -5,6 +5,8 @@
 #include "screen/screen.hpp"
 #include "screen/debug.hpp"
 #include "screen/splash.hpp"
+#include "button.hpp"
+
 namespace screen{
 
 class GUI {
@@ -18,7 +20,7 @@ class GUI {
 
     // screen::Menu screen_menu;
     Heater_struct &heater;
-    // Settings &_settings;
+    // Settings &settings;
 
     // add all screens to the holder
     screen::Screen *screens[static_cast<int>(screen::ScreenId::MAX)] = {
@@ -28,31 +30,31 @@ class GUI {
         &screen_splash,
     };
 
-    // static const unsigned BUTTONS_SAMPLE_TICKS = board::Clock::CORE_FREQ / 1000 * 10;  // ticks
-    // unsigned _buttons_sample_ticks = 0;
-    // lib::Button _button_up;
-    // lib::Button _button_dw;
-    // lib::Button _button_both;
+    static const unsigned BUTTON_SAMPLE_MIN_TICKS = 10;  // ticks
+    unsigned buttons_sample_ticks = 0;
+    Button button_up;
+    Button button_dw;
+    Button button_both;
 
-    // bool rotation_last = false;
+    bool rotation_last = false;
 
-    // void _buttons_process_fast(unsigned delta_ticks) {
-    //     _buttons_sample_ticks += delta_ticks;
-    //     if (_buttons_sample_ticks < BUTTONS_SAMPLE_TICKS) return;
-    //     _buttons_sample_ticks -= BUTTONS_SAMPLE_TICKS;
-    //     bool btn_state_up;
-    //     bool btn_state_dw;
-    //     if (_settings.get_left_handed()) {
-    //         btn_state_up = board::Buttons::get_instance().is_pressed_dw();
-    //         btn_state_dw = board::Buttons::get_instance().is_pressed_up();
-    //     } else {
-    //         btn_state_up = board::Buttons::get_instance().is_pressed_up();
-    //         btn_state_dw = board::Buttons::get_instance().is_pressed_dw();
-    //     }
-    //     _button_up.process(btn_state_up, btn_state_dw, 10);
-    //     _button_dw.process(btn_state_dw, btn_state_up, 10);
-    //     _button_both.process(btn_state_up && btn_state_dw, false, 10);
-    // }
+    void buttons_process_raw(unsigned delta_ticks) {
+        buttons_sample_ticks += delta_ticks;
+        if (buttons_sample_ticks < BUTTON_SAMPLE_MIN_TICKS) return;
+        bool btn_state_up;
+        bool btn_state_dw;
+        // if (_settings.get_left_handed()) {
+        //     btn_state_up = (GPIO_PIN_RESET == HAL_GPIO_ReadPin(BTN_DWN_GPIO_Port, BTN_DWN_Pin));
+        //     btn_state_dw = (GPIO_PIN_RESET == HAL_GPIO_ReadPin(BTN_UP_GPIO_Port, BTN_UP_Pin));
+        // } else {
+            btn_state_up = (GPIO_PIN_RESET == HAL_GPIO_ReadPin(BTN_UP_GPIO_Port, BTN_UP_Pin));
+            btn_state_dw = (GPIO_PIN_RESET == HAL_GPIO_ReadPin(BTN_DWN_GPIO_Port, BTN_DWN_Pin));
+        // }
+        button_up.process(btn_state_up, btn_state_dw, buttons_sample_ticks);
+        button_dw.process(btn_state_dw, btn_state_up, buttons_sample_ticks);
+        button_both.process(btn_state_up && btn_state_dw, false, buttons_sample_ticks);
+        buttons_sample_ticks = 0;
+    }
 
     // void _buttons_process() {
     //     lib::Button::Action btn_action_up = _button_up.get_status();
