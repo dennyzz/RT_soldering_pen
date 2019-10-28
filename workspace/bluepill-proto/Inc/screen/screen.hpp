@@ -2,20 +2,26 @@
 #define ___SCREEN_HPP_
 
 #include "display.hpp"
+#include "button.hpp"
 
 namespace screen {
 class Screen;
 
 enum ScreenId {
-	MAIN = 0,
-	INFO, 
-	COUNT, 
-	DEBUG,
+    SPLASH = 0, 
+    DEBUG, 
+    MAIN, 
+    INFO, 
     MAX
+	// MAIN = 0,
+	// INFO, 
+	// COUNT, 
+	// DEBUG,
+ //    MAX
 };
 
 class ScreenHolder {
-	ScreenId screen_id = ScreenId::MAIN;
+	ScreenId screen_id = ScreenId::SPLASH;
 	Screen **screen_list;
 
 public:
@@ -45,9 +51,9 @@ protected:
 public:
     Screen(ScreenHolder &init_screen_holder) : screen_holder(init_screen_holder) {}
 
-    virtual bool button_up(int act) { return false; };
-    virtual bool button_dn(int act) { return false; };
-    virtual bool button_both(int act) { return false; };
+    virtual bool button_up(Button::Action act) { return false; };
+    virtual bool button_dw(Button::Action act) { return false; };
+    virtual bool button_both(Button::Action act) { return false; };
     virtual void update() = 0;
     virtual void draw() = 0;
 };

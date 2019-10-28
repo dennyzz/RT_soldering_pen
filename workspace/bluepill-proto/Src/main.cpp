@@ -142,9 +142,11 @@ void startGUITask(void const *argument)
   uint32_t task_delay;
   for(;;)
   {
+    task_delay = last_tick;
     osDelayUntil (&last_tick, 25);
-    task_delay = osKernelSysTick() - last_tick;
-    last_tick = osKernelSysTick();
+    task_delay = osKernelSysTick() - task_delay;
+    printf("time:%d\n", osKernelSysTick());
+    printf("taskdelay:%d\n", task_delay);
     gui.process(task_delay);
     gui.draw();
   }
@@ -162,7 +164,7 @@ void startPIDTask(void const *argument)
   printf("PID Task Started\n");
   for(;;)
   {
-    osDelay(100);
+    osDelay(2);
     AdcDrv::measure();
     AdcDrv::getValues(heater);
   }
@@ -178,9 +180,9 @@ void startIMUTask(void const *argument)
   printf("IMU Task Started\n");
   for(;;)
   {
-    osDelay(100);
+    osDelay(200);
     HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-    osDelay(100);
+    osDelay(200);
     HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
   }
 }

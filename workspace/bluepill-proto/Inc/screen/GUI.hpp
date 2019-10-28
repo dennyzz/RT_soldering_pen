@@ -24,13 +24,13 @@ class GUI {
 
     // add all screens to the holder
     screen::Screen *screens[static_cast<int>(screen::ScreenId::MAX)] = {
+        &screen_splash,
         &screen_debug,
         &screen_main,
         &screen_menu,
-        &screen_splash,
     };
 
-    static const unsigned BUTTON_SAMPLE_MIN_TICKS = 10;  // ticks
+    static const unsigned BUTTON_SAMPLE_MIN_TICKS = 20;  // ticks
     unsigned buttons_sample_ticks = 0;
     Button button_up;
     Button button_dw;
@@ -49,6 +49,7 @@ class GUI {
         // } else {
             btn_state_up = (GPIO_PIN_RESET == HAL_GPIO_ReadPin(BTN_UP_GPIO_Port, BTN_UP_Pin));
             btn_state_dw = (GPIO_PIN_RESET == HAL_GPIO_ReadPin(BTN_DWN_GPIO_Port, BTN_DWN_Pin));
+            printf("up:%d dw:%d\n", btn_state_up, btn_state_dw);
         // }
         button_up.process(btn_state_up, btn_state_dw, buttons_sample_ticks);
         button_dw.process(btn_state_dw, btn_state_up, buttons_sample_ticks);
@@ -56,14 +57,14 @@ class GUI {
         buttons_sample_ticks = 0;
     }
 
-    // void _buttons_process() {
-    //     lib::Button::Action btn_action_up = _button_up.get_status();
-    //     lib::Button::Action btn_action_dw = _button_dw.get_status();
-    //     lib::Button::Action btn_action_both = _button_both.get_status();
-    //     if (_screen_holder.get()->button_up(btn_action_up)) _button_up.block();
-    //     if (_screen_holder.get()->button_dw(btn_action_dw)) _button_dw.block();
-    //     if (_screen_holder.get()->button_both(btn_action_both)) _button_both.block();
-    // }
+    void buttons_process() {
+        Button::Action btn_action_up = button_up.get_status();
+        Button::Action btn_action_dw = button_dw.get_status();
+        Button::Action btn_action_both = button_both.get_status();
+        if (screen_holder.get()->button_up(btn_action_up)) button_up.block();
+        if (screen_holder.get()->button_dw(btn_action_dw)) button_dw.block();
+        if (screen_holder.get()->button_both(btn_action_both)) button_both.block();
+    }
 
     Display::FrameBuff &fb = display.get_fb();
 
@@ -85,8 +86,10 @@ public:
     {
         display.init();   
     }
-    void process(unsigned delta_ticks) {
-        //_buttons_process_fast(delta_ticks);
+
+    void process(unsigned delta_ticks) 
+    {
+    	buttons_process_raw(delta_ticks);
         screen_holder.get()->update();
     }
 
@@ -97,8 +100,7 @@ public:
         //     rotation_last = rotation;
         //     board::display.rotate(rotation, rotation);
         // }
-
-        fb.clear();
+        buttons_process();
         screen_holder.get()->draw();
         display.redraw();
     }

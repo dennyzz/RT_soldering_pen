@@ -11,6 +11,7 @@ class Debug : public Screen {
 int i = 0;
 int x = 10;
 int y = 0;
+int state = 0;
 char buffer[32];
 Heater_struct &heating;
 
@@ -24,9 +25,60 @@ public:
 
     void draw() 
     {
-		fb.clear();
-		draw_adc();
+    	fb.clear();
+		switch(state)
+		{
+	 		case 0:
+				draw_adc();
+				break;
+	 		case 1:
+		 		draw_raw_adc();
+				break;
+	 		case 2:
+	 			draw_counter();
+				break;
+			default:
+				draw_adc();
+		}
+
 		display.redraw();
+    }
+	bool button_up(Button::Action act)
+	{
+		switch(act)
+		{
+			case Button::Action::RELEASED_SHORT:
+				if(state < 2)
+				{
+					state++;
+				}
+				else
+				{
+					state = 0;
+				}
+				return true;
+			default:
+				return false;
+		}
+	}
+    
+    bool button_dw(Button::Action act)
+    {
+		switch(act)
+		{
+			case Button::Action::RELEASED_SHORT:
+				if(state < 2)
+				{
+					state++;
+				}
+				else
+				{
+					state = 0;
+				}
+				return true;
+			default: 
+				return false;
+		}
     }
 private:
 	void draw_raw_adc()

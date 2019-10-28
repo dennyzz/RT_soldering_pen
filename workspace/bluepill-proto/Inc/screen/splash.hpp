@@ -23,17 +23,23 @@ public:
 	
 	void update()
 	{
-		printf("Splash::update()\n");
+		// printf("Splash::update()\n");
 		i++;
-		if(i > 999)
+		if(i > 40)
+		{
+			// reset self
 			i = 0;
+			loaded = false;
+			change_screen(ScreenId::DEBUG);
+		}
 	};
 
 	// draw functions assumes cleared fb, and adds all graphics to buffer
     void draw() {
 		if(!loaded)
 		{
-			printf("Splash::draw()\n");
+			fb.clear();
+			// printf("Splash::draw()\n");
 			//TODO: grab the image from flash and send to buffer
 			// instead of loading from flash for now we generate a dummy
 			sprintf(buffer, "Splash screen");
@@ -45,7 +51,7 @@ public:
 	};
 
     bool button_up(int act) { return false; };
-    bool button_dn(int act) { return false; };
+    bool button_dw(int act) { return false; };
     bool button_both(int act) { return false; };
 };
 

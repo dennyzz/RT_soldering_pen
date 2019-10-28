@@ -45,12 +45,12 @@ void AdcDrv::measure(void) {
       }
     }
     endtick = osKernelSysTick();
-    printf("dma took %d ticks\n", (int)(endtick - starttick));
-    for (int i = 0; i < 6; i++)
-    {
-      printf("0x%04x ", adcBuf[i]);
-    }
-    printf("\n");
+    // printf("dma took %d ticks\n", (int)(endtick - starttick));
+    // for (int i = 0; i < 6; i++)
+    // {
+      // printf("0x%04x ", adcBuf[i]);
+    // }
+    // printf("\n");
   }
 }
 
@@ -76,7 +76,6 @@ void AdcDrv::getValues(Heater_struct &heater)
   heater.tamb = convertExtTemp(adcBuf[3]);
   heater.ttip = convertTipTemp(adcBuf[4]);
   heater.tint = convertIntTemp(adcBuf[5]);
-  printf("int:%d\n", adcBuf[5]);
 }
 
 uint16_t AdcDrv::updateIntVRef(uint16_t rawData)
@@ -123,7 +122,7 @@ int16_t AdcDrv::convertTipTemp(uint16_t rawData)
   // TODO: double check these numbers for thermocouple?
   // TODO: the math used to calc gain looks wrong?!?!
   stmp /= 152; // 371x gain 41uV/C = 15.2mV/C
-  stmp *= 100;
+  stmp *= 10;
   stmp /= u16intmax;
   // returned is still degrees above reference junction!
   return (int16_t)stmp;
