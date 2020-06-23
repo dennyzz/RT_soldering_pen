@@ -180,9 +180,9 @@ void startIMUTask(void const *argument)
   printf("IMU Task Started\n");
   for(;;)
   {
-    osDelay(200);
+    osDelay(2);
     HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-    osDelay(200);
+    osDelay(2);
     HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
   }
 }

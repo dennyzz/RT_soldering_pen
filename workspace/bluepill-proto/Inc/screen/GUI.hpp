@@ -94,12 +94,13 @@ public:
     }
 
     void draw() {
-        // if (board::I2c::get_instance().is_busy()) return;
-        // bool rotation = _settings.get_left_handed();
-        // if (rotation_last != rotation) {
-        //     rotation_last = rotation;
-        //     board::display.rotate(rotation, rotation);
-        // }
+    	// if (board::I2c::get_instance().is_busy()) return;
+    	// TODO: check rotation code, doesn't work?
+         bool rotation = true;
+         if (rotation_last != rotation) {
+             rotation_last = rotation;
+             display.rotate(rotation, rotation);
+         }
         buttons_process();
         screen_holder.get()->draw();
         display.redraw();

@@ -10,7 +10,7 @@ class Splash : public Screen {
 
 private:
 	bool loaded = false;
-	int i;
+	int i = 0;
 	char buffer[20];
 	void loadFromFlash(void){
 		// image will be stored at 2nd to last KB in flash memory or page
@@ -20,6 +20,7 @@ private:
 
 public:
     Splash(screen::ScreenHolder &screen_holder) : Screen(screen_holder) {}
+	~Splash() {}
 	
 	void update()
 	{

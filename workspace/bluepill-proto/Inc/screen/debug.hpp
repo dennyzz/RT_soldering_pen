@@ -17,6 +17,7 @@ Heater_struct &heating;
 
 public:
     Debug(screen::ScreenHolder &_screen_holder, Heater_struct &heating) : Screen(_screen_holder), heating(heating) {}
+    ~Debug() {}
 //    Debug(screen::ScreenHolder &_screen_holder) : Screen(_screen_holder) {}
 	void update()
 	{

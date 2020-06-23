@@ -50,6 +50,7 @@ protected:
 
 public:
     Screen(ScreenHolder &init_screen_holder) : screen_holder(init_screen_holder) {}
+    virtual ~Screen() {}
 
     virtual bool button_up(Button::Action act) { return false; };
     virtual bool button_dw(Button::Action act) { return false; };

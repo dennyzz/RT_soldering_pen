@@ -71,8 +71,8 @@ void AdcDrv::getValues(Heater_struct &heater)
   referenceVolts = updateIntVRef(adcBuf[6]);
   heater.vint = referenceVolts;
   heater.vin = convertVoltageSense(adcBuf[0]);
-  heater.i1 = convertCurrentSense(adcBuf[1], 100);
-  heater.i2 = convertCurrentSense(adcBuf[2], 50);
+  heater.i1 = convertCurrentSense(adcBuf[1], 50);
+  heater.i2 = convertCurrentSense(adcBuf[2], 100);
   heater.tamb = convertExtTemp(adcBuf[3]);
   heater.ttip = convertTipTemp(adcBuf[4]);
   heater.tint = convertIntTemp(adcBuf[5]);

@@ -288,40 +288,49 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
                           |GPIO_PIN_7, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PtPin */
+#if !defined(MODEL_HW1_PROTO)
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+
   GPIO_InitStruct.Pin = LED3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED3_GPIO_Port, &GPIO_InitStruct);
+#endif
 
-  /*Configure GPIO pins : PB12 PB13 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+
+  GPIO_InitStruct.Pin = GATE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GATE_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : BTN up, down*/
+  GPIO_InitStruct.Pin = BTN_UP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(BTN_UP_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB14 PB15 PB7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pin = BTN_DWN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
+  HAL_GPIO_Init(BTN_DWN_GPIO_Port, &GPIO_InitStruct);
 }
 
 /* I2C1 init function */
 static void MX_I2C1_Init(void)
 {
-
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 400000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
@@ -335,12 +344,10 @@ static void MX_I2C1_Init(void)
   {
     Error_Handler();
   }
-
 }
 
 void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(i2cHandle->Instance==I2C1)
   {
@@ -401,7 +408,6 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
 
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 {
-
   if(i2cHandle->Instance==I2C1)
   {
   /* USER CODE BEGIN I2C1_MspDeInit 0 */
@@ -428,7 +434,6 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 /* IWDG init function */
 static void MX_IWDG_Init(void)
 {
-
   hiwdg.Instance = IWDG;
   hiwdg.Init.Prescaler = IWDG_PRESCALER_4;
   hiwdg.Init.Reload = 4095;
@@ -436,14 +441,12 @@ static void MX_IWDG_Init(void)
   {
     Error_Handler();
   }
-
 }
 
 /* USB init function */
 
 static void MX_USB_PCD_Init(void)
 {
-
   hpcd_USB_FS.Instance = USB;
   hpcd_USB_FS.Init.dev_endpoints = 8;
   hpcd_USB_FS.Init.speed = PCD_SPEED_FULL;
@@ -454,12 +457,10 @@ static void MX_USB_PCD_Init(void)
   {
     Error_Handler();
   }
-
 }
 
 void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 {
-
   if(pcdHandle->Instance==USB)
   {
   /* USER CODE BEGIN USB_MspInit 0 */
@@ -475,7 +476,6 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 
 void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
 {
-
   if(pcdHandle->Instance==USB)
   {
   /* USER CODE BEGIN USB_MspDeInit 0 */
@@ -492,7 +492,6 @@ void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
 /* WWDG init function */
 static void MX_WWDG_Init(void)
 {
-
   hwwdg.Instance = WWDG;
   hwwdg.Init.Prescaler = WWDG_PRESCALER_1;
   hwwdg.Init.Window = 64;
@@ -502,12 +501,10 @@ static void MX_WWDG_Init(void)
   {
     Error_Handler();
   }
-
 }
 
 void HAL_WWDG_MspInit(WWDG_HandleTypeDef* wwdgHandle)
 {
-
   if(wwdgHandle->Instance==WWDG)
   {
   /* USER CODE BEGIN WWDG_MspInit 0 */
