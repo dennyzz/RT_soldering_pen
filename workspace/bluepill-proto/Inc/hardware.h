@@ -29,6 +29,8 @@ extern I2C_HandleTypeDef hi2c1;
 extern IWDG_HandleTypeDef hiwdg;
 extern PCD_HandleTypeDef hpcd_USB_FS;
 extern WWDG_HandleTypeDef hwwdg;
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim2;
 
 void Error_Handler(void);
 

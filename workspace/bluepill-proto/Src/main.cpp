@@ -178,12 +178,14 @@ void startPIDTask(void const *argument)
 void startIMUTask(void const *argument)
 {
   printf("IMU Task Started\n");
+  uint8_t val = 0;
+  HAL_TIM_Base_Start(&htim1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   for(;;)
   {
-    osDelay(2);
-    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-    osDelay(2);
-    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+    osDelay(1);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, val);
+    val++;
   }
 }
 
