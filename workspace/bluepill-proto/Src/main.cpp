@@ -160,13 +160,13 @@ void startGUITask(void const *argument)
 void startPIDTask(void const *argument)
 {
   printf("PID Task Initializing\n");
-  AdcDrv::init(&hadc1, 7);
+  AdcDrv::get_instance().init(&hadc1, AdcDrv::State::MEASURE_IDLE);
   printf("PID Task Started\n");
   for(;;)
   {
-    osDelay(2);
-    AdcDrv::measure();
-    AdcDrv::getValues(heater);
+    // osDelay(2);
+    AdcDrv::get_instance().measure();
+    AdcDrv::get_instance().getValues(heater);
   }
 }
 

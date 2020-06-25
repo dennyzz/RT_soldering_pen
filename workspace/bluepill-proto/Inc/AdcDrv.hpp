@@ -9,37 +9,47 @@
 class AdcDrv {
 
 public:
-  enum class State {
-    DONE, 
-    MEASURE_IDLE, 
-    MEASURE_HEAT,
-  } _measure_state = State::DONE;
+    enum class State {
+        DONE, 
+        MEASURE_IDLE, 
+        MEASURE_TEMP, 
+        MEASURE_POWER,
+    };
+    State _measure_state = State::DONE;
 
 private: 
-  static uint16_t adcBuf[112];
-  static SemaphoreHandle_t ADCSem;
-  static ADC_HandleTypeDef *hadc;
-  static uint32_t starttick;
-  static uint32_t endtick;
-  static uint8_t numChannels;
-  static uint16_t referenceVolts;
-  static const uint16_t u16intmax = 0xFFFF;
+    static const uint16_t u16intmax = 0xFFFF;
+    static const int MAX_NUM_CHANNELS = 7;
+    static const int OVERSAMPLE = 2 ^ 4; //oversample 16x for 16-bit measurements (12-bit adc << 4)
+    uint16_t adcBuf[MAX_NUM_CHANNELS * OVERSAMPLE];
+    SemaphoreHandle_t ADCSem;
+    ADC_HandleTypeDef *hadc;
+    // uint32_t starttick;
+    // uint32_t endtick;
+    uint8_t numChannels;
+    uint16_t referenceVolts;
 public:
-  static void init(ADC_HandleTypeDef *adcHandle, uint8_t numChan);
+    void init(ADC_HandleTypeDef *adcHandle, State s);
 
-  // conversions
-  static uint16_t updateIntVRef(uint16_t rawData);
-  static int16_t convertExtTemp(uint16_t rawData);
-  static int16_t convertIntTemp(uint16_t rawData);
-  static int16_t convertTipTemp(uint16_t rawData);
-  static uint16_t convertVoltageSense(uint16_t rawData);
-  static uint16_t convertCurrentSense(uint16_t rawData, uint16_t gain);
+    // conversions
+    uint16_t updateIntVRef(uint16_t rawData);
+    int16_t convertExtTemp(uint16_t rawData);
+    int16_t convertIntTemp(uint16_t rawData);
+    int16_t convertTipTemp(uint16_t rawData);
+    uint16_t convertVoltageSense(uint16_t rawData);
+    uint16_t convertCurrentSense(uint16_t rawData, uint16_t gain);
 
-  static void measure(void);
-  static void getRawValues(Heater_struct &heater);
-  static void getValues(Heater_struct &heater);
-  static void CpltCallback(ADC_HandleTypeDef* hadc);
+    int measure(void);
+    void config_channels(ADC_HandleTypeDef* hadc, uint32_t *channels, uint32_t sampleTime, uint32_t numChan);
+    void set_channel_group(State s);
+    void getRawValues(Heater_struct &heater);
+    void getValues(Heater_struct &heater);
+    void CpltCallback(ADC_HandleTypeDef* hadc);
 
+    static AdcDrv &get_instance() {
+        static AdcDrv instance;
+        return instance;
+    }
 };
 
 #endif //_ADCDRV_HPP_
